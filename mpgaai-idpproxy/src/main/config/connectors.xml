@@ -1,0 +1,336 @@
+<ROOT>
+
+	<!--  SP backend basic data -->
+	<myData>
+		<SPTarget>cookie</SPTarget>
+		<SPShire>https://services.aai.mpg.de/shibboleth/dummy/entry</SPShire>
+		<SPProviderId>idpproxysp_aai_mpg_de</SPProviderId>
+		<Credential>
+			<PrivateKey>${IDP_HOME}/credentials/idp.key</PrivateKey>
+			<Certificate>${IDP_HOME}/credentials/idp.crt</Certificate>
+		</Credential>
+	</myData>
+	
+	
+	<!-- username suffix mapping -->
+	<NameTables>
+		<NameTable name="GWDGTomcat">
+			<Name>gwdg.tomcat.de</Name>
+		</NameTable>
+		<NameTable name="GWDGApache">
+			<Name>gwdg.apache.de</Name>
+		</NameTable>
+		<NameTable name="LDAP">
+			<Name>ldap.de</Name>
+		</NameTable>
+		<NameTable name="GWDGLDAP" default="true">
+			<Name>gwdg.de</Name>
+		</NameTable>
+		<NameTable name="GWDGOVID">
+			<Name>ovid.gwdg</Name>
+		</NameTable>
+		<NameTable name="FKF">
+			<Name>fkf.mpg.de</Name>
+		</NameTable>
+		<NameTable name="RZG">
+			<Name>rzg.mpg.de</Name>
+		</NameTable>
+		<NameTable name="Shib2GWDGTomcat">
+			<Name>gwdg.shib2.tomcat.de</Name>
+		</NameTable>
+	</NameTables>
+	
+	
+	<!-- authenticators -->
+	<Auth-Connectors>
+		<Auth-Connector name="Shib1TomcatAuth" nameTable="GWDGTomcat"
+			class="de.mpg.aai.idpproxy.config.connector.auth.imp.Shib1TomcatAuthParser">
+			<SSOHandler>
+				https://vmext143.gwdg.de/shibboleth-idp/SSO
+			</SSOHandler>
+			<cert>
+-----BEGIN CERTIFICATE-----
+MIIFWzCCBEOgAwIBAgIEDS6ERjANBgkqhkiG9w0BAQUFADCBuzELMAkGA1UEBhMC
+REUxFjAUBgNVBAgTDU5JRURFUlNBQ0hTRU4xEzARBgNVBAcTCkdPRVRUSU5HRU4x
+PjA8BgNVBAoTNUdlc2VsbHNjaGFmdCBmdWVyIHdpc3NlbnNjaGFmdGxpY2hlIERh
+dGVudmVyYXJiZWl0dW5nMQ0wCwYDVQQLEwRHV0RHMRAwDgYDVQQDEwdHV0RHIENB
+MR4wHAYJKoZIhvcNAQkBFg9nd2RnLWNhQGd3ZGcuZGUwHhcNMDgxMTAzMTQxMjA3
+WhcNMTMxMTAyMDAwMDAwWjBoMQswCQYDVQQGEwJERTE+MDwGA1UEChM1R2VzZWxs
+c2NoYWZ0IGZ1ZXIgd2lzc2Vuc2NoYWZ0bGljaGUgRGF0ZW52ZXJhcmJlaXR1bmcx
+GTAXBgNVBAMTEHZtZXh0MTQzLmd3ZGcuZGUwggEiMA0GCSqGSIb3DQEBAQUAA4IB
+DwAwggEKAoIBAQDaHkt/NG7cQ+STbenrbBwKK2H/Gp6yFeREyZgntgK1kGK/uO1y
+Fc3Wn1mb3b4+fDDMVobrGysKUXpXcsWmMKioVAVbRtjPhyPdyyowY3lDhBKejB0j
+s3hqQAk4st+kdjdbVFix4QUdTABmRaomo008hp+4im6DPyVPihb+lzbth9c8Ch44
+eBuJS08G4PKYFmAuMCNCJuZl6Yh/so7yOPUgxkINHwUstUvWUtvEYpXVvjj4E4T3
+AbrOb/xuzrpSUc6NaUFUFZtv5ey8Cs61ip5CgzBVDZ0r/B19Z8Qv/whBOv1WI2J5
+k73+/8UDbaE8+ydSNW8YQxjogFvTItVGucEvAgMBAAGjggG3MIIBszAJBgNVHRME
+AjAAMAsGA1UdDwQEAwIE8DATBgNVHSUEDDAKBggrBgEFBQcDATAdBgNVHQ4EFgQU
+94H+rILS51tz0zTFxffSnUUlKcQwHwYDVR0jBBgwFoAUpuT/mP3lSTJ+XHXyFqJN
+jHQ13iIwMgYDVR0RBCswKYIQdm1leHQxNDMuZ3dkZy5kZYcEhkwUj4EPdGdydXNj
+aEBnd2RnLmRlMHkGA1UdHwRyMHAwNqA0oDKGMGh0dHA6Ly9jZHAxLnBjYS5kZm4u
+ZGUvZ3dkZy1jYS9wdWIvY3JsL2NhY3JsLmNybDA2oDSgMoYwaHR0cDovL2NkcDIu
+cGNhLmRmbi5kZS9nd2RnLWNhL3B1Yi9jcmwvY2FjcmwuY3JsMIGUBggrBgEFBQcB
+AQSBhzCBhDBABggrBgEFBQcwAoY0aHR0cDovL2NkcDEucGNhLmRmbi5kZS9nd2Rn
+LWNhL3B1Yi9jYWNlcnQvY2FjZXJ0LmNydDBABggrBgEFBQcwAoY0aHR0cDovL2Nk
+cDIucGNhLmRmbi5kZS9nd2RnLWNhL3B1Yi9jYWNlcnQvY2FjZXJ0LmNydDANBgkq
+hkiG9w0BAQUFAAOCAQEAXzl7wUO5D8dhSRxh2tTG7nEZsh+x50+ncnbV+bJM+GQ7
+LeQJ7Z3XinnPcoCyuYAvhEB7OOiKLjHT+OAK8TH77q7yM7OHqWjbsM3e9e96W2hr
+/fqZQYSTDZMNPYKJ0yTO8t+vuXI/Cyu+WtMlI4G+4ok50rZCSw0slCzguKxdJ1Ji
+L1ps6ji7MdVivz+fBuQ7PUy+LzyZX/qlImmhi9COtXYwebENkDtsdTYNoOgyv+My
+ceIxA2X5XqGyGaP33RqJleLEPhJqGWhjevSTNoVDXEAo/kXLck9LYII4YjiI21kV
+8JGp21ipicZqO6XBL8/K2C+rXnebDFHhMl1xNX1rtA==
+-----END CERTIFICATE-----
+			</cert>
+		</Auth-Connector>
+		<Auth-Connector name="Shib1ApacheAuth" nameTable="GWDGApache"
+			class="de.mpg.aai.idpproxy.config.connector.auth.imp.Shib1ApacheAuthParser">
+			<SSOHandler>
+				https://vmext153.gwdg.de/shibboleth-idp/SSO
+			</SSOHandler>
+			<cert>
+-----BEGIN CERTIFICATE-----
+MIIFZTCCBE2gAwIBAgIEC90N5TANBgkqhkiG9w0BAQUFADCBuzELMAkGA1UEBhMC
+REUxFjAUBgNVBAgTDU5JRURFUlNBQ0hTRU4xEzARBgNVBAcTCkdPRVRUSU5HRU4x
+PjA8BgNVBAoTNUdlc2VsbHNjaGFmdCBmdWVyIHdpc3NlbnNjaGFmdGxpY2hlIERh
+dGVudmVyYXJiZWl0dW5nMQ0wCwYDVQQLEwRHV0RHMRAwDgYDVQQDEwdHV0RHIENB
+MR4wHAYJKoZIhvcNAQkBFg9nd2RnLWNhQGd3ZGcuZGUwHhcNMDgwMjIxMTQ1MzEw
+WhcNMTMwMjE5MTQ1MzEwWjBoMQswCQYDVQQGEwJERTE+MDwGA1UEChM1R2VzZWxs
+c2NoYWZ0IGZ1ZXIgd2lzc2Vuc2NoYWZ0bGljaGUgRGF0ZW52ZXJhcmJlaXR1bmcx
+GTAXBgNVBAMTEHZtZXh0MTUzLmd3ZGcuZGUwggEiMA0GCSqGSIb3DQEBAQUAA4IB
+DwAwggEKAoIBAQCnn10Y9U12uqMg2+aWW0lRXNDQByzkcp2neRLghmrCVa8s5YPh
+zHQf4mem4zIQY2pKq3AFZy+j2ASTJIYZHvN6LrRilEGOxEiNVPdox6MM2mB/MeUc
+vBy0I2gMrGGl/YEAglbf7xJcxB1eIk2SpHNf9fSozP92Rp4DdTb/H3nQJhHRbL8X
+AwVxZRdLmF2dbgPa5qoQQppqEW9EChJm/NGuO9BRWc1mMCXzudfxZVYZtuKCorUe
+6XFz920eEAa6sXKwkT5ecmM7rUhZIhSDT/JJXr+AhI50UoFnjbqiBygCQsOcg8nj
+stnJZUwi9Iwlo2JeuzlrLk26zIi9c8nh34kVAgMBAAGjggHBMIIBvTAJBgNVHRME
+AjAAMAsGA1UdDwQEAwIF4DAdBgNVHSUEFjAUBggrBgEFBQcDAgYIKwYBBQUHAwEw
+HQYDVR0OBBYEFCCFoc2xfJWUB/prHPt5PACJUodQMB8GA1UdIwQYMBaAFKbk/5j9
+5Ukyflx18haiTYx0Nd4iMDIGA1UdEQQrMCmBD3RncnVzY2hAZ3dkZy5kZYIQdm1l
+eHQxNTMuZ3dkZy5kZYcEhkwUmTB5BgNVHR8EcjBwMDagNKAyhjBodHRwOi8vY2Rw
+MS5wY2EuZGZuLmRlL2d3ZGctY2EvcHViL2NybC9jYWNybC5jcmwwNqA0oDKGMGh0
+dHA6Ly9jZHAyLnBjYS5kZm4uZGUvZ3dkZy1jYS9wdWIvY3JsL2NhY3JsLmNybDCB
+lAYIKwYBBQUHAQEEgYcwgYQwQAYIKwYBBQUHMAKGNGh0dHA6Ly9jZHAxLnBjYS5k
+Zm4uZGUvZ3dkZy1jYS9wdWIvY2FjZXJ0L2NhY2VydC5jcnQwQAYIKwYBBQUHMAKG
+NGh0dHA6Ly9jZHAyLnBjYS5kZm4uZGUvZ3dkZy1jYS9wdWIvY2FjZXJ0L2NhY2Vy
+dC5jcnQwDQYJKoZIhvcNAQEFBQADggEBABqL3wroUiyMWLeoG3o5DOHTm87u9wcs
+8j54CF2SpdbiTFcvOB2dPOrHbGG5VigEydVB8W1VNmKC0fRE/ycJJg/EslX7zno+
+phFP5CoGQtB2nmgdVRtVEQGsbSroxLgzAAVUSbARqugx018AI1Erx0SJrRa5IlaS
+PhGRC+3yCyhKSyMviidoda/hNsqDbya867Kg5i/qOPXYD6dGt8uB4pV1LX2qf620
+XfPulijT9c6apGWUZcWb6qz6rAj2kPbTkmELjgeUMUfxyZ8GuiTnznDLO8w52qKz
+ecVMu5cru2PHGsTFzXg00hq/p5rblkDMo59jpZv8lxYc+TJEfXH+GBs=
+-----END CERTIFICATE-----
+		</cert>
+		</Auth-Connector>
+		<Auth-Connector name="LdapAuth" nameTable="LDAP"
+			class="de.mpg.aai.idpproxy.config.connector.auth.imp.LdapAuthParser">
+			<LDAPURL>
+				ldap://mdir2.gwdg.de/o=GOESTERN??sub?(uid=%username%)
+			</LDAPURL>
+			<LDAPAdmin>cn=dummy,o=gwdg</LDAPAdmin>
+			<LDAPPassword>xxx</LDAPPassword>
+		</Auth-Connector>
+		<Auth-Connector name="LdapAuth" nameTable="GWDGLDAP"
+			class="de.mpg.aai.idpproxy.config.connector.auth.imp.LdapAuthParser">
+			<LDAPURL>
+				ldap://mdir2.gwdg.de/o=GOESTERN??sub?(uid=%username%)
+			</LDAPURL>
+			<LDAPAdmin>cn=dummy,o=gwdg</LDAPAdmin>
+			<LDAPPassword>xxx</LDAPPassword>
+		</Auth-Connector>
+		<Auth-Connector name="Shib1Shib2Auth" nameTable="FKF"
+			class="de.mpg.aai.idpproxy.config.connector.auth.imp.Shib1Shib2AuthParser">
+			<SSOHandler>
+				https://shib.fkf.mpg.de/idp/profile/Shibboleth/SSO
+			</SSOHandler>
+			<AuthHandler>
+				https://shib.fkf.mpg.de/idp/Authn/UserPassword
+			</AuthHandler>
+			<SendWithRealm>false</SendWithRealm>
+			<cert>
+-----BEGIN CERTIFICATE-----
+MIIE6TCCA9GgAwIBAgIEDIL62TANBgkqhkiG9w0BAQUFADBeMQswCQYDVQQGEwJE
+RTEgMB4GA1UEChMXTWF4LVBsYW5jay1HZXNlbGxzY2hhZnQxDzANBgNVBAMTBk1Q
+RyBDQTEcMBoGCSqGSIb3DQEJARYNbXBnLWNhQG1wZy5kZTAeFw0wODA2MjYxMTI4
+MTBaFw0xMzA2MjUxMTI4MTBaMIGBMQswCQYDVQQGEwJERTEgMB4GA1UEChMXTWF4
+LVBsYW5jay1HZXNlbGxzY2hhZnQxNjA0BgNVBAsTLU1heC1QbGFuY2stSW5zdGl0
+dXQgZnVlciBGZXN0a29lcnBlcmZvcnNjaHVuZzEYMBYGA1UEAxMPc2hpYi5ma2Yu
+bXBnLmRlMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAswVWsBl/Rt22
+kJnrPSYeKW0bdXEZ0wJNsCA4bnOqhpAvsppgVx9MB9u/G0I5xenyhFhMJbxcudzI
+CoHgDm80xEbvrH6cX2xn5GaD5ByycWlJuN/423G38Sj5xrbNNoPQozyHwI+DAORm
+k2ddD8YtMHtSLuJLkYyvMXIbFyUjY8nQQTVf5SW75KM+NFkMN6dMzoM5WtIqmYO4
+zlISbBff6TYFqxxUbs/3TfaPAz1FtqU8CtYFCqjoSxg0Ucn+ZbzbV/ux7qCfpEg+
+ip2yJVGEMNsn0YxB9trIqLlKtuc1awmQne/a5ke4T761hPR85DSaSuqG6ECWzYU2
+kkdz9wlreQIDAQABo4IBiTCCAYUwCQYDVR0TBAIwADALBgNVHQ8EBAMCBeAwHQYD
+VR0lBBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMBMB0GA1UdDgQWBBQjdc6K4kI1ZzHh
+NUCVHBugwhA7wTAfBgNVHSMEGDAWgBQC1h5uCau/WGWnCjxIM2HRzn3DWzB3BgNV
+HR8EcDBuMDWgM6Axhi9odHRwOi8vY2RwMS5wY2EuZGZuLmRlL21wZy1jYS9wdWIv
+Y3JsL2NhY3JsLmNybDA1oDOgMYYvaHR0cDovL2NkcDIucGNhLmRmbi5kZS9tcGct
+Y2EvcHViL2NybC9jYWNybC5jcmwwgZIGCCsGAQUFBwEBBIGFMIGCMD8GCCsGAQUF
+BzAChjNodHRwOi8vY2RwMS5wY2EuZGZuLmRlL21wZy1jYS9wdWIvY2FjZXJ0L2Nh
+Y2VydC5jcnQwPwYIKwYBBQUHMAKGM2h0dHA6Ly9jZHAyLnBjYS5kZm4uZGUvbXBn
+LWNhL3B1Yi9jYWNlcnQvY2FjZXJ0LmNydDANBgkqhkiG9w0BAQUFAAOCAQEAqsxq
++RE4wUnnClodyyUVdzwcDY03qkiZ78zNkYJnSjKd4TN9sVjXaWJkatthQzIi3260
+9hCQ4pIZwYSuo8yM5LdhP4lUhplZdzE8VLTzKJk8phNTMMndNJ/YlvWqS1UgltSZ
+g8ynmNNpo8hIoGqN1v26fO/wpUz9TZJDTTpJVfSJQdVc2KUE3LtkwMR09LD+Mb37
+awPcQZLNvLixUOFnubkJu7sT80GL5iXhmvk4VDzkC6ohT7nImawV6ilRJJTlswjU
+8/zw+zpZ0TmYkj2FiaQevIV+/qCNPORgathgiil9hVSffD9DXSMEhHVzmkJQ+EYW
+dICB6qTiFIgjp8a5iw==
+-----END CERTIFICATE-----
+		</cert>
+		</Auth-Connector>
+		<Auth-Connector name="Shib1Shib2Auth" nameTable="RZG"
+			class="de.mpg.aai.idpproxy.config.connector.auth.imp.Shib1Shib2AuthParser">
+			<SSOHandler>
+				https://idp.rzg.mpg.de/myidp/profile/Shibboleth/SSO
+			</SSOHandler>
+			<AuthHandler>
+				https://idp.rzg.mpg.de/myidp/Authn/UserPassword
+			</AuthHandler>
+			<SendWithRealm>true</SendWithRealm>
+			<cert>
+-----BEGIN CERTIFICATE-----
+MIIF3DCCBMSgAwIBAgIEDalNQjANBgkqhkiG9w0BAQUFADBYMQswCQYDVQQGEwJE
+RTETMBEGA1UEChMKREZOLVZlcmVpbjEQMA4GA1UECxMHREZOLVBLSTEiMCAGA1UE
+AxMZREZOLVZlcmVpbiBQQ0EgR3JpZCAtIEcwMTAeFw0wOTAyMDQxNzI2MTFaFw0x
+MDAzMDYxNzI2MTFaMH8xCzAJBgNVBAYTAkRFMRQwEgYDVQQKEwtHcmlkR2VybWFu
+eTEgMB4GA1UECxMXTWF4LVBsYW5jay1HZXNlbGxzY2hhZnQxHzAdBgNVBAsTFlJl
+Y2hlbnplbnRydW0gR2FyY2hpbmcxFzAVBgNVBAMTDmlkcC5yemcubXBnLmRlMIIB
+IjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxhAYZxmO5gVbj9wtMZ+m24um
+QtZMCHleORn5crdW4noILmZ66YV6TAj9cpWS4kjO772Q+ft0dY2/6qF5RdbOg6DT
+ndV7PT80MXBklR+IrGQmMTHELd3aZzEdR26lwY+3RutLge7KysTVOJop/wdeZoBr
+RH8AU9X+dJLdHPb/fpHM001vdbbRQraCWY94BBFoK9BuQ4qVLBfXX5/y+kdrM/Mn
+K7ix3kxqLkj5zJyuU/pM98Lf8cKpODlFR3x2ySus5rgVFQ46EReIqaDKQat4hJw5
+aCPUrVfO039VlQSu4UvpIK5DMfASbjA/JGb+U6O9QGzVig3SY0xcoTRWaHC8KQID
+AQABo4IChTCCAoEwDAYDVR0TAQH/BAIwADAOBgNVHQ8BAf8EBAMCBPAwHQYDVR0l
+BBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMBMB0GA1UdDgQWBBTU3UHP33B3UuD5WjOW
+vTWcsUpbrjAfBgNVHSMEGDAWgBSW7NytmsP+UKM8IuU9wsX/ytkixjA5BgNVHREE
+MjAwgR5zZXJ2ZXItY2VydGlmaWNhdGVzQHJ6Zy5tcGcuZGWCDmlkcC5yemcubXBn
+LmRlMCoGA1UdIAQjMCEwEQYPKwYBBAGBrSGCLAEBAwEEMAwGCiqGSIb3TAUCAgEw
+gcEGA1UdHwSBuTCBtjBZoFegVYZTaHR0cDovL2NkcDEucGNhLmRmbi5kZS9kZm4t
+cGtpL2NlcnRpZmljYXRpb24veDUwOS9ncmlkL2cxL2RhdGEvY3Jscy9yb290LWNh
+LWNybC5jcmwwWaBXoFWGU2h0dHA6Ly9jZHAyLnBjYS5kZm4uZGUvZGZuLXBraS9j
+ZXJ0aWZpY2F0aW9uL3g1MDkvZ3JpZC9nMS9kYXRhL2NybHMvcm9vdC1jYS1jcmwu
+Y3JsMIHWBggrBgEFBQcBAQSByTCBxjBhBggrBgEFBQcwAoZVaHR0cDovL2NkcDEu
+cGNhLmRmbi5kZS9kZm4tcGtpL2NlcnRpZmljYXRpb24veDUwOS9ncmlkL2cxL2Rh
+dGEvY2VydHMvcm9vdC1jYS1jZXJ0LmNydDBhBggrBgEFBQcwAoZVaHR0cDovL2Nk
+cDIucGNhLmRmbi5kZS9kZm4tcGtpL2NlcnRpZmljYXRpb24veDUwOS9ncmlkL2cx
+L2RhdGEvY2VydHMvcm9vdC1jYS1jZXJ0LmNydDANBgkqhkiG9w0BAQUFAAOCAQEA
+poJgZfO4iCUfRJD4QBD/UDLeNW+e44ZrI5hM+vRBq84zjsffuDDN5RDeWNSRX6HD
+MUq40LRp0ebE/3K3FJ5QY7ZLgHqwoCjGQaKxu0M2cdCPhdRJy+tC6ocyDDS/4ldV
+RpvRq+4LUUIMpckQbo1rI0Og7iirHeLh6N5O65SOVTNKVbmyCxyEMb1/AMQDsY7I
+2PDuCJHj4RPV5YC69HmwJIq8ocT8xzPNh4OSZGTBYYxdIOXQAkhygNj4ZJf+iNl6
+9LLgelOW/G3DN2wt2y6LRXrkYzF6SFYIlcAcBAqMJJiKd9GRRCKkTlw06/ylpCH4
+fhH/m+zZC70LQZ/g6zPr2g==
+-----END CERTIFICATE-----
+		</cert>
+		</Auth-Connector>
+		<Auth-Connector name="Shib1TomcatAuth" nameTable="Shib2GWDGTomcat" class="de.mpg.aai.idpproxy.config.connector.auth.imp.Shib1TomcatAuthParser">
+			<SSOHandler>
+				https://vmext148.gwdg.de/idp/profile/shibboleth/SSO
+			</SSOHandler>
+			<cert>
+-----BEGIN CERTIFICATE-----
+MIIFZTCCBE2gAwIBAgIEC0gmqzANBgkqhkiG9w0BAQUFADCBuzELMAkGA1UEBhMC
+REUxFjAUBgNVBAgTDU5JRURFUlNBQ0hTRU4xEzARBgNVBAcTCkdPRVRUSU5HRU4x
+PjA8BgNVBAoTNUdlc2VsbHNjaGFmdCBmdWVyIHdpc3NlbnNjaGFmdGxpY2hlIERh
+dGVudmVyYXJiZWl0dW5nMQ0wCwYDVQQLEwRHV0RHMRAwDgYDVQQDEwdHV0RHIENB
+MR4wHAYJKoZIhvcNAQkBFg9nd2RnLWNhQGd3ZGcuZGUwHhcNMDcxMDMxMTYxMTA5
+WhcNMTIxMDI5MTYxMTA5WjBoMQswCQYDVQQGEwJERTE+MDwGA1UEChM1R2VzZWxs
+c2NoYWZ0IGZ1ZXIgd2lzc2Vuc2NoYWZ0bGljaGUgRGF0ZW52ZXJhcmJlaXR1bmcx
+GTAXBgNVBAMTEHZtZXh0MTQ4Lmd3ZGcuZGUwggEiMA0GCSqGSIb3DQEBAQUAA4IB
+DwAwggEKAoIBAQDF7gN6qSVVMrdMp3uXL/02YFagzSlQdQdUNkA5Zv9Q3TLhb1u9
+Yd27RrMfMtdFBTRcc5XpMUDAYHVi8W3xrgznR1hU4Br3ZGzrhTc7YUYgg/BquTJA
+qhLfNLZFlCcPq6HiRY9Nv5YtTJd5GnnCKPjj81JalkzcFE8mlOaffbtipmnjKdVC
+OzpiQm0lPR8HUS6umsyeYd239Zda4pQ5ZATy//3YHsZF8xqMmmAr0dL7Kv6hyGQ3
+DulhrtzXnGOusdigD9qSQqB3DoBUpi02739onvTY1/L0w8StTDbwgY7y/iy8QS1d
+veImKPU6x8hhB7ixFL0HIesbkzryW/QFO9npAgMBAAGjggHBMIIBvTAJBgNVHRME
+AjAAMAsGA1UdDwQEAwIF4DAdBgNVHSUEFjAUBggrBgEFBQcDAgYIKwYBBQUHAwEw
+HQYDVR0OBBYEFGtB7OCv6eTKEA+ODAWJXbEnaKJIMB8GA1UdIwQYMBaAFKbk/5j9
+5Ukyflx18haiTYx0Nd4iMDIGA1UdEQQrMCmBD3RncnVzY2hAZ3dkZy5kZYIQdm1l
+eHQxNDguZ3dkZy5kZYcEhkwUlDB5BgNVHR8EcjBwMDagNKAyhjBodHRwOi8vY2Rw
+MS5wY2EuZGZuLmRlL2d3ZGctY2EvcHViL2NybC9jYWNybC5jcmwwNqA0oDKGMGh0
+dHA6Ly9jZHAyLnBjYS5kZm4uZGUvZ3dkZy1jYS9wdWIvY3JsL2NhY3JsLmNybDCB
+lAYIKwYBBQUHAQEEgYcwgYQwQAYIKwYBBQUHMAKGNGh0dHA6Ly9jZHAxLnBjYS5k
+Zm4uZGUvZ3dkZy1jYS9wdWIvY2FjZXJ0L2NhY2VydC5jcnQwQAYIKwYBBQUHMAKG
+NGh0dHA6Ly9jZHAyLnBjYS5kZm4uZGUvZ3dkZy1jYS9wdWIvY2FjZXJ0L2NhY2Vy
+dC5jcnQwDQYJKoZIhvcNAQEFBQADggEBAFwN931uDbrdpgdyapGpRSgcnXPHm8aI
+qoqdEky9cLx7Ofd6swWUGaPxkFnxZCHxiOKT5Kgtp4inWOlgqX4w2kH74z1sigpF
+L0Ehx7z+fHWxqBG96WjFZlyYH+GcjBOIo8Tp+d/HkGDK4bF0FsLuMaZOOnSDMHpm
+BmiQlgO+NSnF6lAJUEU/urvA+SG1UhzDcrro/pjqjJ32IdZX7UCs8/N0afpB+URC
+CGvfJKQFtanVYfLub+f7Hoz86LQTRrkz8Mhltn+KzE/GFpCcbGn4C3Zpw4dYvy28
+OJXJ/LdXsQpxhraUqgDFbJPnX1cUggHvrvOAcqgKIh3AgRmu15eQhh4=
+-----END CERTIFICATE-----
+		</cert>
+		</Auth-Connector>
+		<Auth-Connector name="LdapAuth" nameTable="GWDGOVID"
+			class="de.mpg.aai.idpproxy.config.connector.auth.imp.LdapAuthParser">
+			<LDAPURL>
+				ldap://ldap.gwdg.de/ou=gwdgovid,dc=gwdg,dc=de??sub?(uid=%username%)
+			</LDAPURL>
+			<LDAPAdmin>
+				cn=0gwdgovid,ou=gwdgovid,dc=gwdg,dc=de
+			</LDAPAdmin>
+			<LDAPPassword>xxx</LDAPPassword>
+		</Auth-Connector>
+
+	</Auth-Connectors>
+	
+	
+	<!-- data / attribute resolution provider -->
+	<Data-Connectors>
+		<Data-Connector name="Shib1Data" nameTable="GWDGTomcat"
+			class="de.mpg.aai.idpproxy.config.connector.data.imp.Shib1DataParser">
+			<AAHandler>
+				https://vmext143.gwdg.de:8443/shibboleth-idp/AA
+			</AAHandler>
+		</Data-Connector>
+		<Data-Connector name="Shib1Data" nameTable="Shib2GWDGTomcat" class="de.mpg.aai.idpproxy.config.connector.data.imp.Shib1DataParser">
+			<AAHandler>https://vmext148.gwdg.de:8443/idp/profile/saml1/SOAP/AttributeQuery</AAHandler>
+		</Data-Connector>
+		<Data-Connector name="Shib1Data" nameTable="GWDGApache"
+			class="de.mpg.aai.idpproxy.config.connector.data.imp.Shib1DataParser">
+			<AAHandler>
+				https://vmext153.gwdg.de:8443/shibboleth-idp/AA
+			</AAHandler>
+		</Data-Connector>
+		<Data-Connector name="LdapData" nameTable="LDAP"
+			class="de.mpg.aai.idpproxy.config.connector.data.imp.LdapDataParser">
+			<LDAPURL>
+				ldap://mdir2.gwdg.de/o=GOESTERN??sub?(uid=%username%)
+			</LDAPURL>
+			<LDAPAdmin>cn=dummy,o=gwdg</LDAPAdmin>
+			<LDAPPassword>xxx</LDAPPassword>
+		</Data-Connector>
+		<Data-Connector name="LdapData" nameTable="GWDGLDAP"
+			class="de.mpg.aai.idpproxy.config.connector.data.imp.LdapDataParser">
+			<LDAPURL>
+				ldap://mdir2.gwdg.de/o=GOESTERN??sub?(uid=%username%)
+			</LDAPURL>
+			<LDAPAdmin>cn=dummy,o=gwdg</LDAPAdmin>
+			<LDAPPassword>xxx</LDAPPassword>
+		</Data-Connector>
+		<Data-Connector name="Shib1Data" nameTable="FKF"
+			class="de.mpg.aai.idpproxy.config.connector.data.imp.Shib1DataParser">
+			<AAHandler>
+				https://shib.fkf.mpg.de/idp/profile/SAML1/SOAP/AttributeQuery
+			</AAHandler>
+		</Data-Connector>
+		<Data-Connector name="Shib1Data" nameTable="RZG"
+			class="de.mpg.aai.idpproxy.config.connector.data.imp.Shib1DataParser">
+			<AAHandler>
+				https://idp.rzg.mpg.de/myidp/profile/SAML1/SOAP/AttributeQuery
+			</AAHandler>
+		</Data-Connector>
+		<Data-Connector name="LdapData" nameTable="GWDGOVID"
+			class="de.mpg.aai.idpproxy.config.connector.data.imp.LdapDataParser">
+			<LDAPURL>
+				ldap://ldap.gwdg.de/ou=gwdgovid,dc=gwdg,dc=de??sub?(uid=%username%)
+			</LDAPURL>
+			<LDAPAdmin>
+				cn=0gwdgovid,ou=gwdgovid,dc=gwdg,dc=de
+			</LDAPAdmin>
+			<LDAPPassword>xxx</LDAPPassword>
+		</Data-Connector>
+
+	</Data-Connectors>
+</ROOT>

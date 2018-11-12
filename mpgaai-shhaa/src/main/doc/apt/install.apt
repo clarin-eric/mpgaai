@@ -1,0 +1,136 @@
+Installation of SHHAA Filter
+
+*Setting up a Shibboleth "Lazy Session"
+
+  SHHAA Filter relies in the background on a Shibboleth Service Provider, @see {{{index.html}how it works}}. 
+  
+  to set up a Shibboleth "Lazy Session" make an accordant entry in your Apache-Webserver/Shibboleth-SP configuration. 
+  
+** Classical Web Application Setup
+  
+  let's say you have a classical setup:\
+  with your web application hosted in an Apache Tomcat Container
+  and accessed through a Apache Webserver (incl. mod_shib / aka Shibboleth Service Provider) in front 
+  which "proxies" the request via AJP to the tomcat: 
+  
+  * envorionment:\
+  (web)server host name:\ \ \ \ \ \ \ \ \ \ <<foo.org>>\
+  tomcat host name, ports:\ \ \ \ \ \ \ <<apps.foo.org:8080, 8009 (ajp)>>\
+  webapp context path:\ \ \ \ \ \ \ \ \ \ \ \ \ <</myapp/>>\
+  => the resulting webapp-URL: <<http://www.foo.org/myapp/>>
+  
+  []
+  
+  for the sake of completeness below a sample snip of the webserver config to route through from Apache Webserver to Tomcat via AJP.
+  
+  sample config via mod-proxy(-ajp) in your Apache Webserver config files:
+  
++---------------------------------------------------------+
+  ## load & enable required modules:
+  ## mod_proxy, mod_proxy_ajp, mod_rewrite
+  <IfModule !proxy_module>
+    LoadModule proxy_module modules/mod_proxy.so
+  </IfModule>
+  <IfModule !proxy_ajp_module>
+    LoadModule proxy_ajp_module modules/mod_proxy_ajp.so
+  </IfModule>
+  <IfModule !rewrite_module>
+  	LoadModule rewrite_module modules/mod_rewrite.so
+  </IfModule>
+  RewriteEngine On
+  
+  ## actual ajp config  
+  ## (rewrite to fix infamous trailing-slash issue) 
+  RewriteRule  ^/myapp$ /myapp/ [R]
+  ProxyPass    /myapp/  ajp://apps.foo.org:8009/myapp/
++---------------------------------------------------------+
+
+
+** Shibboleth SP - Lazy Session
+
+  A so called Shibboleth "Lazy Session" is a special configuaration of the SP 
+  to put a location/resource under "the hood"/protection of the SP 
+  but without enforcing actual authentication or access-control. 
+  
+  with this config a SP passes through all requests to that location without restrictions, 
+  only, it (the SP) is aware whether there is actually a session (login) present or not. 
+  
+  In case a Shibboleth Session is there, the SP will export (if configured) session information and the attributes 
+  it has retrieved beforhand during the authentication process 
+  (got them from a so called Identity Provider throw exchange of SAML messages)
+  to the HTTP Header and the Apache Webserver environment variables.
+  
+  The SHHAA Filter then in turn (downstream the SP) can make use of this attributes it finds in the HTTP header.  
+
+  sample config of a Lazy Session for our exemplary webapp under http://www.foo.org/myapp/ in your Apache Webserver config files: 
+
++---------------------------------------------------------+
+  ## SHIBBOLETH SERVICE-PROVIDER (2.x) integration 
+  Include /opt/shibboleth-sp/etc/shibboleth/apache22.config
+  
+  ## actual LAZY SESSION config
+  <Location /myapp >
+    AuthType            shibboleth
+  # ShibRequireSession  Off
+    ShibUseEnvironment	On
+    ShibUseHeaders      On
+    Require             shibboleth
+  </Location>
++---------------------------------------------------------+
+  
+  Just to be clear: 
+  The point about Lazy-Session vs. a classical Shibboleth-SP setup is, 
+  to allow with Lazy-Session in principle anonymous access to the protected location, 
+  with the option to login still (SSO) to the (Shibboleth) AAI Federation; 
+  while with a classical Shib-SP setup users always have to authenticate (SSO login) first before he can access any resource.  
+
+
+* Integration in Web Application
+
+  The shhaa filter get integrated in a j2ee web application as any other servlet filter\
+  - in your <<web.xml>> enter: 
+  
+  * first declare the filter...
+   
++---------------------------------------------------------+
+	<!--  filter declarations -->
+	<filter>
+		<filter-name>AAIFilter</filter-name>
+		<filter-class>de.mpg.aai.shhaa.AuthFilter</filter-class>
+	</filter>
++---------------------------------------------------------+
+
+  *  ...and map it to your webapp locations ("URLs") \
+  (here: filter active for the whole webapp) 
+   
++---------------------------------------------------------+
+	<!-- filter mappings -->
+	<filter-mapping>
+		<filter-name>AAIFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
++---------------------------------------------------------+
+
+  * enable startup listener for intial reading of the filter's configuratioin file...
+   
++---------------------------------------------------------+
+  	<!-- context listeners -->
+	<listener>
+		<listener-class>de.mpg.aai.shhaa.config.ConfigContextListener</listener-class>
+	</listener>
++---------------------------------------------------------+
+
+ * ...and tell it the filter's {config-file-location} (as a webapp init parameter)
+ 
++---------------------------------------------------------+
+  	<context-param>
+		<param-name>ShhaaConfigLocation</param-name>
+		<param-value>/WEB-INF/shhaa.xml</param-value>
+	</context-param>
++---------------------------------------------------------+
+
+  []
+  
+  
+  that's all. so much about integrating the shhaa filter into your webapp.\
+  {{{config.html} >> next step: configuration}}

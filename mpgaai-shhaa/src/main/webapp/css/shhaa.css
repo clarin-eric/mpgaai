@@ -1,0 +1,103 @@
+body {
+	margin:				0 auto;
+	padding:			0 0;
+	background:			#ffffe0;
+	text-align:			center;
+	cursor:				default;
+}
+div.body {
+	margin:				0 auto;
+	padding:			30;
+	width:				800px;
+/*	height:				100%;
+	min-height:			100%;	*/
+	background:			#ffffff;
+	text-align:			left;
+}
+/** 
+ * central format for font, ~size and ~color 
+ */
+body, div.body, a, a:visited, input, button, table {
+	font-family:		Arial,Helvetica,sans-serif !important;
+	font-size:			14px; 
+	color:				#666666;
+}
+code {
+	font-size:			12px; 
+	color:				#666666;
+}
+/* further general settings for blank tag layouts */
+img {
+	border:				none;
+}
+
+table {
+	margin: 			0 auto;
+	align:				center;
+	padding:			0;
+/*	width:				expression(document.body.clientWidth < 334 ? "333px" : "auto");*/
+	width:				600px;
+	min-width:			500px;
+	border-spacing:		1px;
+	border:				none;
+/*	border:				1px solid #ff0000;*/
+}
+table th {
+	padding:			2 10;
+	text-align:			left; 
+	font-size:			16px;
+	font-weight:		normal;
+	color:				#ff6900;	
+	border-top:			1px solid #eeeeee;
+}
+table td {
+	vertical-align:		top;
+	padding:			2 10;
+	background:			#eeeeee;
+}
+div.table {
+	margin:				30 0;
+	text-align:			center;
+}
+
+ul {
+	margin:				5 0 10 0;
+}
+li {
+	padding:			5 0 5 0;
+}
+
+
+div.title {
+	font-size:			20px;
+	font-weight:		normal;
+	color:				#ff6900;	
+	text-align:			center;
+/*	border:				1px solid red;*/
+}
+div.subtitle {
+	font-size:			14px;
+	font-weight:		normal;
+	color:				#ff6900;	
+	text-align:			center;
+}
+
+
+div.heading {
+	margin:				30 auto;
+	padding:			20 0;
+	font-size:			16px;
+	font-weight:		bold;
+/*	color:				#ff6900;*/	
+	text-align:			center;
+	border:				1px solid #ff0000;
+}
+div.salut, div.msg {
+	margin:				10 auto;
+	text-align:			center;
+	font-weight:		normal;
+	font-size:			14px;
+}
+div.ro {
+	color:				#cccccc;
+}

@@ -1,0 +1,245 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+
+
+
+
+
+
+
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>mpgaai shhaa - </title>
+    <style type="text/css" media="all">
+      @import url("./css/maven-base.css");
+      @import url("./css/maven-theme.css");
+      @import url("./css/site.css");
+    </style>
+    <link rel="stylesheet" href="./css/print.css" type="text/css" media="print" />
+        <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+      </head>
+  <body class="composite">
+    <div id="banner">
+                    <span id="bannerLeft">
+    
+            mpgaai shhaa
+    
+            </span>
+                        <a href="https://aai.mpg.de" id="bannerRight">
+    
+                                    <img src="https://idp.rzg.mpg.de/sp2/img/mpgaai-logo.png" alt="" />
+    
+            </a>
+            <div class="clear">
+        <hr/>
+      </div>
+    </div>
+    <div id="breadcrumbs">
+          
+  
+
+  
+    
+            
+  
+    
+            <div class="xleft">
+        Last Published: 2010-01-26
+                  &nbsp;| Version: 1.0.2
+                      </div>
+            <div class="xright">            <a href="https://idp.rzg.mpg.de/secure/shhaa/" class="externalLink">Demo</a>
+            |
+                <a href="https://aai.mpg.de/" class="externalLink">MPGAAI</a>
+            
+  
+
+  
+    
+            
+  
+    
+  </div>
+      <div class="clear">
+        <hr/>
+      </div>
+    </div>
+    <div id="leftColumn">
+      <div id="navcolumn">
+           
+  
+
+  
+    
+            
+  
+    
+                   <h5>shhaa filter</h5>
+            <ul>
+              
+    <li class="none">
+                    <a href="index.html">Home</a>
+          </li>
+              
+    <li class="none">
+              <strong>Installation</strong>
+        </li>
+              
+    <li class="none">
+                    <a href="config.html">Configuration</a>
+          </li>
+              
+    <li class="none">
+                    <a href="usage.html">Usage</a>
+          </li>
+              
+    <li class="none">
+                    <a href="apidocs/index.html">API JavaDoc</a>
+          </li>
+              
+    <li class="none">
+                    <a href="project-info.html">Project Info</a>
+          </li>
+          </ul>
+                                           <a href="http://maven.apache.org/" title="Built by Maven" class="poweredBy">
+            <img alt="Built by Maven" src="./images/logos/maven-feather.png"></img>
+          </a>
+                       
+  
+
+  
+    
+            
+  
+    
+        </div>
+    </div>
+    <div id="bodyColumn">
+      <div id="contentBox">
+        <div class="section"><h2>Installation of SHHAA Filter</h2>
+<div class="section"><h3>Setting up a Shibboleth &quot;Lazy Session&quot;</h3>
+<p>SHHAA Filter relies in the background on a Shibboleth Service Provider, @see <a href="index.html">how it works</a>
+. </p>
+<p>to set up a Shibboleth &quot;Lazy Session&quot; make an accordant entry in your Apache-Webserver/Shibboleth-SP configuration. </p>
+<div class="section"><h4>Classical Web Application Setup</h4>
+<p>let's say you have a classical setup:<br />
+with your web application hosted in an Apache Tomcat Container and accessed through a Apache Webserver (incl. mod_shib / aka Shibboleth Service Provider) in front which &quot;proxies&quot; the request via AJP to the tomcat: </p>
+<ul><li>envorionment:<br />
+(web)server host name:&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<b>foo.org</b>
+<br />
+tomcat host name, ports:&#160;&#160;&#160;&#160;&#160;&#160;&#160;<b>apps.foo.org:8080, 8009 (ajp)</b>
+<br />
+webapp context path:&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<b>/myapp/</b>
+<br />
+=&gt; the resulting webapp-URL: <b>http://www.foo.org/myapp/</b>
+</li>
+</ul>
+<p>for the sake of completeness below a sample snip of the webserver config to route through from Apache Webserver to Tomcat via AJP.</p>
+<p>sample config via mod-proxy(-ajp) in your Apache Webserver config files:</p>
+<div class="source"><pre>  ## load &amp; enable required modules:
+  ## mod_proxy, mod_proxy_ajp, mod_rewrite
+  &lt;IfModule !proxy_module&gt;
+    LoadModule proxy_module modules/mod_proxy.so
+  &lt;/IfModule&gt;
+  &lt;IfModule !proxy_ajp_module&gt;
+    LoadModule proxy_ajp_module modules/mod_proxy_ajp.so
+  &lt;/IfModule&gt;
+  &lt;IfModule !rewrite_module&gt;
+        LoadModule rewrite_module modules/mod_rewrite.so
+  &lt;/IfModule&gt;
+  RewriteEngine On
+  
+  ## actual ajp config  
+  ## (rewrite to fix infamous trailing-slash issue) 
+  RewriteRule  ^/myapp$ /myapp/ [R]
+  ProxyPass    /myapp/  ajp://apps.foo.org:8009/myapp/</pre>
+</div>
+</div>
+<div class="section"><h4>Shibboleth SP - Lazy Session</h4>
+<p>A so called Shibboleth &quot;Lazy Session&quot; is a special configuaration of the SP to put a location/resource under &quot;the hood&quot;/protection of the SP but without enforcing actual authentication or access-control. </p>
+<p>with this config a SP passes through all requests to that location without restrictions, only, it (the SP) is aware whether there is actually a session (login) present or not. </p>
+<p>In case a Shibboleth Session is there, the SP will export (if configured) session information and the attributes it has retrieved beforhand during the authentication process (got them from a so called Identity Provider throw exchange of SAML messages) to the HTTP Header and the Apache Webserver environment variables.</p>
+<p>The SHHAA Filter then in turn (downstream the SP) can make use of this attributes it finds in the HTTP header. </p>
+<p>sample config of a Lazy Session for our exemplary webapp under http://www.foo.org/myapp/ in your Apache Webserver config files: </p>
+<div class="source"><pre>  ## SHIBBOLETH SERVICE-PROVIDER (2.x) integration 
+  Include /opt/shibboleth-sp/etc/shibboleth/apache22.config
+  
+  ## actual LAZY SESSION config
+  &lt;Location /myapp &gt;
+    AuthType            shibboleth
+  # ShibRequireSession  Off
+    ShibUseEnvironment  On
+    ShibUseHeaders      On
+    Require             shibboleth
+  &lt;/Location&gt;</pre>
+</div>
+<p>Just to be clear: The point about Lazy-Session vs. a classical Shibboleth-SP setup is, to allow with Lazy-Session in principle anonymous access to the protected location, with the option to login still (SSO) to the (Shibboleth) AAI Federation; while with a classical Shib-SP setup users always have to authenticate (SSO login) first before he can access any resource. </p>
+</div>
+</div>
+<div class="section"><h3>Integration in Web Application</h3>
+<p>The shhaa filter get integrated in a j2ee web application as any other servlet filter<br />
+- in your <b>web.xml</b>
+ enter: </p>
+<ul><li>first declare the filter...<div class="source"><pre>        &lt;!--  filter declarations --&gt;
+        &lt;filter&gt;
+                &lt;filter-name&gt;AAIFilter&lt;/filter-name&gt;
+                &lt;filter-class&gt;de.mpg.aai.shhaa.AuthFilter&lt;/filter-class&gt;
+        &lt;/filter&gt;</pre>
+</div>
+</li>
+<li>...and map it to your webapp locations (&quot;URLs&quot;) <br />
+(here: filter active for the whole webapp) <div class="source"><pre>        &lt;!-- filter mappings --&gt;
+        &lt;filter-mapping&gt;
+                &lt;filter-name&gt;AAIFilter&lt;/filter-name&gt;
+                &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+        &lt;/filter-mapping&gt;</pre>
+</div>
+</li>
+<li>enable startup listener for intial reading of the filter's configuratioin file...<div class="source"><pre>        &lt;!-- context listeners --&gt;
+        &lt;listener&gt;
+                &lt;listener-class&gt;de.mpg.aai.shhaa.config.ConfigContextListener&lt;/listener-class&gt;
+        &lt;/listener&gt;</pre>
+</div>
+</li>
+</ul>
+<ul><li>...and tell it the filter's <a name="config-file-location">config-file-location</a>
+ (as a webapp init parameter)<div class="source"><pre>        &lt;context-param&gt;
+                &lt;param-name&gt;ShhaaConfigLocation&lt;/param-name&gt;
+                &lt;param-value&gt;/WEB-INF/shhaa.xml&lt;/param-value&gt;
+        &lt;/context-param&gt;</pre>
+</div>
+</li>
+</ul>
+<p>that's all. so much about integrating the shhaa filter into your webapp.<br />
+<a href="config.html"> &gt;&gt; next step: configuration</a>
+</p>
+</div>
+</div>
+
+      </div>
+    </div>
+    <div class="clear">
+      <hr/>
+    </div>
+    <div id="footer">
+      <div class="xright">&#169;  
+          2009-2010
+    
+          computing center garching of the max planck society
+          
+  
+
+  
+    
+            
+  
+    
+  </div>
+      <div class="clear">
+        <hr/>
+      </div>
+    </div>
+  </body>
+</html>

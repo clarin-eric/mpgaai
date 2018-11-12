@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+
+	<publishDate position="left"/>
+	<version position="left"/>
+
+	<bannerRight>
+		<name>mpgaai-logo</name>
+		<src>https://idp.rzg.mpg.de/sp2/img/mpgaai-logo.png</src>
+		<href>https://aai.mpg.de</href>
+	</bannerRight>
+	<body>
+		<links>
+			<item name="Demo" href="https://idp.rzg.mpg.de/secure/shhaa/" />
+			<item name="MPGAAI" href="https://aai.mpg.de/" />
+		</links>
+
+		<menu name="SHHAA Documentation">
+			<item name="Introduction"	href="intro.html"/>
+			<item name="Installation"	href="install.html"/>
+			<item name="Configuration"	href="config.html"/>
+			<item name="Usage"			href="usage.html"/>
+			<item name="API JavaDoc"	href="apidocs/index.html"/>
+		</menu>
+		
+		<menu ref="reports"/>
+		
+		
+	</body>
+</project>

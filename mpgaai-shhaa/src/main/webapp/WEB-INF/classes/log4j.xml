@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd" >
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+<!-- NOTE ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	pattern layout is
+	"loglevel:date [..package(1).class]#method:line :: message"
+	@see http://logging.apache.org/log4j/docs/api/org/apache/log4j/PatternLayout.html
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+	
+	<appender name="authLog" class="org.apache.log4j.DailyRollingFileAppender" >
+		<param name="File" value="${catalina.base}/logs/shhaa.log" />
+		<!--param name="MaxFileSize" value="10MB" />
+		<param name="MaxBackupIndex" value="20" /-->
+		<layout class="org.apache.log4j.PatternLayout" >
+			<param name="ConversionPattern" value="%p - %d{yyyy-MM-dd HH:mm:ss:SSS} [%c#%M:%L] :: %m%n" />
+		</layout>
+	</appender>
+	
+	<!-- -== CONSOLE - STANDARD-OUT ==- -->
+	<appender name="stdoutLog" class="org.apache.log4j.ConsoleAppender" >
+		<layout class="org.apache.log4j.PatternLayout" >
+			<param name="ConversionPattern"
+				value="%p - %d{yyyy-MM-dd HH:mm:ss:SSS} [%c#%M:%L] :: %m%n" />
+		</layout>
+	</appender>
+	
+	
+	<!--=========================================================================-->
+	
+	
+	<!-- ** shhaa logger **** -->
+	<logger name="de.mpg.aai.shhaa" >
+		<level value="info" /> 
+		<appender-ref ref="authLog" />
+	</logger>
+	<!-- ** jaas logger **** -->
+	<logger name="de.mpg.aai.security.auth" >
+		<level value="info" /> 
+		<appender-ref ref="authLog" />
+	</logger>
+	<!-- ** root/all logger **** -->
+	<root>
+		<priority value ="error" />
+		<appender-ref ref="authLog" />
+	</root>
+
+</log4j:configuration>

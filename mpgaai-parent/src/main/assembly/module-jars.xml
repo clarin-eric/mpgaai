@@ -1,0 +1,22 @@
+<!-- build all modules JARs -->
+<assembly>
+	<id>module-jars</id>
+	<formats>
+		<format>dir</format>
+	</formats>
+	<includeBaseDirectory>false</includeBaseDirectory>
+	<moduleSets>
+		<moduleSet>
+			<includes>
+				<include>de.mpg.mpgaai:mpgaai-jaas</include>
+				<include>de.mpg.mpgaai:mpgaai-shhaa</include>
+				<include>de.mpg.mpgaai:mpgaai-idpproxy</include>
+			</includes>
+			<binaries>
+				<!-- outputDirectory>modules</outputDirectory-->
+				<unpack>false</unpack>
+			</binaries>
+		</moduleSet>
+	</moduleSets>
+ 
+ </assembly>

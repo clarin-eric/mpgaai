@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ROOT>
+<shhaa>
+	
+	<authentication>
+		<shibheader>
+			<username>eduPersonPrincipalName</username>
+		</shibheader>
+	</authentication>
+	
+	
+	<authorization>
+	
+		<!-- sample:  require valid user  	-->
+		<location  target="/secure/*" />
+
+		<!-- sample:  require 'attribute-X' with values 'foo' AND 'bla'  	-->
+		<location  target="/secure/*" >
+			<require id="attribute-X">foo</require>
+			<require id="attribute-X">bla</require>
+		</location>
+		
+	</authorization>
+	
+</shhaa>
+</ROOT>

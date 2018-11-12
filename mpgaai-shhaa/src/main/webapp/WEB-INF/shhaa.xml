@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ROOT>
+<shhaa>
+
+	<webapp>
+		<!-- optional: 
+			the hostname by which the protected webapp is accessed
+			default: hostname from request  -->
+		<host>http://foo.org</host>
+		<!-- optional:
+			the context-path by which the protected webapp is accessed
+			default: context-path from request -->
+		<context>/sample/myapp</context>
+		<!-- optional 
+			special flag for modular web applications:
+			if true: no/omit display of login-info on initial access with valid session 
+			default: false -->
+		<module>false</module>
+	</webapp>
+	
+	
+	<authentication>
+		<!-- define shibboleth attributes to lookup from the http-header  -->
+		<shibheader>
+			<!-- *mandatory*: 
+				target attribute(s) to use as username, 
+				multiple entries will be tried one after another, first hit is used	-->
+			<username>eduPersonPrincipalName</username>
+			<username>eppn</username>
+			<!-- optional: 
+				attribute to read in the shibboleth session ID, 
+				default: "Shib-Session-ID"	-->
+			<session>Shib-Session-ID</session>
+			<!-- optional: 
+				attribute to read in the shibboleth identity provider (ID), 
+				default: "Shib-Identity-Provider"	-->
+			<idp>Shib-Identity-Provider</idp>
+			<!-- optional: 
+				attribute to read in the shibboleth login time (ID), 
+				default: "Shib-Authentication-Instant"	-->
+			<timestamp>Shib-Authentication-Instant</timestamp>
+		</shibheader>
+		<!-- config for fallback authentication, if no shib-login found -->
+		<fallback>
+			<!-- optional: 
+				the username to set when no shib-session found,
+				default: "anonymous"	-->
+			<username>anonymous</username>
+		</fallback>
+		<!-- optional: SSO (shibboleth) logIN url
+			if set: redirects to sso-url if action is given as request query parameter (@see /handler/actionparam)
+			action: optional, default to "sso" -->
+		<sso action="lI">http://foo.org/Shibboleth.sso/Login</sso>
+		<!-- optional: SLO (shibboleth) logOUT url
+			if set: redirects to slo-url if action is given as request query parameter (@see /handler/actionparam)
+			action: optional, default to "slo" -->
+		<slo action="lO">http://foo.org/Shibboleth.sso/Logout</slo>
+	</authentication>
+	
+	
+	<!-- configuration of (optional) principal attributes -->
+	<composition action="rF">
+		<!-- optional:
+			list of target attributes to lookup in the header -->
+		<shibheader>
+			<attribute>eduPersonAffiliation</attribute>
+			<attribute>eduPersonEntitlement</attribute>
+			<attribute>email</attribute>
+			<attribute>ou</attribute>
+			<attribute>o</attribute>
+		</shibheader>
+		<!-- optional:
+			jaas plugin: configures jaas config file target section;
+			if configured jaas is invoked, using the config found on this configured location (jaas config section) --> 
+		<jaas>
+			<configname>AAI-ATTIRIBUTES</configname>
+		</jaas>
+	</composition>
+	
+	
+	<!-- config of access permission to given location depending on the principal's attributes: -->
+	<authorization>
+	
+		<!-- simple VALID USER:
+			in no specific attributes are defined, 
+			the location requires "just" a VALID (SHIBBOLETH) USER -->
+		<location  target="/simple/*" />
+		<!-- simple sample protected site in demo war -->
+		<location  target="/pages/protected/*" />
+		
+		<!-- simple REQUIRE ATTRIBUTE - logical AND:
+			require attribute:	'attribute-X' 
+			with values: 		'value-x' AND 'value-y' ;
+			(note: if no explicit logic-rule is defined, fallback to "AND")	-->
+		<location  target="/secure/*" >
+			<require id="attribute-X">value-x</require>
+			<require id="attribute-X">value-y</require>
+		</location>
+		
+		
+		<!-- simple REQUIRE - logical OR rule:
+			require attribute:	'attribute-X' 
+			with values: 		'value-x' OR 'value-y'	
+			Rule: logic: AND|OR 
+		-->
+		<location  target="/admin/*" >
+			<rule logic="OR">
+				<require id="attribute-X">value-x</require>
+				<require id="attribute-X">value-y</require>
+			</rule>
+		</location>
+		
+		
+		<!-- COMPLEX MIX: 	
+			A.x AND (B.y OR B.b OR not-C.u) "but"/AND not-C.v
+			
+			location, require: match-modes
+			- match:
+				- case		case sensitive
+				- nocase	ignore case
+				- regex		match by regular expression
+			
+			miss: "matches" on negative hit:
+				within OR (logic-rule): 	if not there ->	valid
+				within AND (logic-rule):	if there ->	fail (no access)
+		-->
+		<location match="regex" target="/protected/.*" >
+			<rule logic="AND">
+				<require match="regex" id="attribute-A">value-x</require>
+				<rule logic="OR">
+					<require id="attribute-B">value-a</require>
+					<require id="attribute-B">value-b</require>
+					<miss id="attribute-C">value-u</miss>
+				</rule>
+				<miss id="attribute-C">value-v</miss>
+			</rule>
+		</location>
+		
+	</authorization>
+	
+	
+	<!-- configures general behavior and "view-control" -->
+	<handler>
+	
+		<!-- optional:
+			ignore given locations, matchmode as above (match: case|nocase|regex) -->
+		<ignore>
+			<location target="/css/*" />
+			<location target="/img/*" />
+		</ignore>
+		
+		<!-- optional
+			flag to indicate whether the provided user Subject is set to read-only  
+			default: false -->
+		<readonly>true</readonly>
+		<!-- optional 
+			flag to indicate that user get routed to sso-login url automatically 
+			on access to protected sites and not logged-in yet 
+			default: true 
+		-->
+		<autologin>true</autologin>
+		<!-- optional
+			request query parameter this filter listens for forced actions
+			@see 'action' attriubte in config for SSO, SLO, and all PAGES
+			default: shhaaDo	-->
+		<actionparam>shhaaDo</actionparam>
+		
+		<!-- configures the view-control targets -->
+		<pages>
+			<!-- optional
+				page do display/notify a valid login event and current-user/session info
+				if set: reroute to configured page in case of a valid login event
+				no default!
+				- action: when configured(!), filter listens for this request parameter and reroutes to given page on hit
+					no default! configure explicitly if wanted -->
+			<info action="dI">/pages/info.jsp</info>
+			<!-- dto: on event of expired session or logged-out -->
+			<expired action="dE">/pages/expired.jsp</expired>
+			<!-- dto: on event of access-denied
+				default: pages/noaccess.jsp	-->
+			<denied action="dD">/pages/noaccess.jsp</denied>
+		</pages>
+		
+	</handler>
+	
+</shhaa>
+</ROOT>

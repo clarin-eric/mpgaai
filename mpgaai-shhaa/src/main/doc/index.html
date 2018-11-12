@@ -1,0 +1,251 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+
+
+
+
+
+
+
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>mpgaai shhaa - </title>
+    <style type="text/css" media="all">
+      @import url("css/maven-base.css");
+      @import url("css/maven-theme.css");
+      @import url("css/site.css");
+    </style>
+    <link rel="stylesheet" href="css/print.css" type="text/css" media="print" />
+        <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+      </head>
+  <body class="composite">
+    <div id="banner">
+                    <span id="bannerLeft">
+    
+            mpgaai shhaa
+    
+            </span>
+                        <a href="https://aai.mpg.de" id="bannerRight">
+    
+                                    <img src="https://idp.rzg.mpg.de/sp2/img/mpgaai-logo.png" alt="" />
+    
+            </a>
+            <div class="clear">
+        <hr/>
+      </div>
+    </div>
+    <div id="breadcrumbs">
+          
+  
+
+  
+    
+            
+  
+    
+            <div class="xleft">
+        Last Published: 2010-01-26
+                  &nbsp;| Version: 1.0.2
+                      </div>
+            <div class="xright">            <a href="https://idp.rzg.mpg.de/secure/shhaa/" class="externalLink">Demo</a>
+            |
+                <a href="https://aai.mpg.de/" class="externalLink">MPGAAI</a>
+            
+  
+
+  
+    
+            
+  
+    
+  </div>
+      <div class="clear">
+        <hr/>
+      </div>
+    </div>
+    <div id="leftColumn">
+      <div id="navcolumn">
+           
+  
+
+  
+    
+            
+  
+    
+                   <h5>shhaa filter</h5>
+            <ul>
+              
+    <li class="none">
+              <strong>Home</strong>
+        </li>
+              
+    <li class="none">
+                    <a href="install.html">Installation</a>
+          </li>
+              
+    <li class="none">
+                    <a href="config.html">Configuration</a>
+          </li>
+              
+    <li class="none">
+                    <a href="usage.html">Usage</a>
+          </li>
+              
+    <li class="none">
+                    <a href="apidocs/index.html">API JavaDoc</a>
+          </li>
+              
+    <li class="none">
+                    <a href="project-info.html">Project Info</a>
+          </li>
+          </ul>
+                                           <a href="http://maven.apache.org/" title="Built by Maven" class="poweredBy">
+            <img alt="Built by Maven" src="images/logos/maven-feather.png"></img>
+          </a>
+                       
+  
+
+  
+    
+            
+  
+    
+        </div>
+    </div>
+    <div id="bodyColumn">
+      <div id="contentBox">
+        <div class="section"><h2>SHHAA - A Simple Access Control Filter </h2>
+<div class="section"><h3>What is SHHAA </h3>
+<p>SHHAA stands for Simple HTTP Header Authentication &amp; Authorization.</p>
+<p>It's a J2EE Web Application Servlet-Filter to handle login and access-control based on HTTP header attributes, where those have been put there in the first place by a Shibboleth Service Provider. </p>
+<p>Thus the filter integrates a web application with a federal authentication- &amp; authoriztion infrastructure (AAI), like the SAML based Shibboleth Framework (where a Service Provider is one part of). </p>
+<div class="section"><h4>What is a Shibboleth Service Provider (mod_shib &amp; shibd with Apache Webserver)</h4>
+<p>A Shibboleth Service Provider (SP) is in fact an Apache Webserver with a Shibbleth Module &quot;mod_shib&quot; which in turn connects the Webserver with the dedicated Shibboleth Daemon &quot;shibd&quot; installed on this machine. </p>
+<p>For details about Shibboleth, installation, configuration and the architecture &amp; concepts behind a Shibboleth AAI federation, please refer to the Internet2 Organisation's <a href="http://shibboleth.internet2.edu/" class="externalLink">Shibboleth Home Site</a>
+ and its <a href="https://spaces.internet2.edu/display/SHIB2/Configuration" class="externalLink">Wiki</a>
+.</p>
+<p>The Webserver then can be configured to protect as Shibboleth Service Provider certain locations, where the SP makes sure, that users have to authenticate first, and further the configured possible additional requirements (based on so called (SAML) attributes) to access the targeted resource are met. If not, the SP will deny access to the requested resource. </p>
+<p>Shibboleth is an implementation of the <a href="http://saml.xml.org/saml-specifications" class="externalLink">SAML</a>
+ protocol standard. </p>
+</div>
+</div>
+<div class="section"><h3>How It Works</h3>
+<p>SHHAA Filter relies in the background on a Shibboleth Service Provider. </p>
+<p>The Filter internally uses/is-based-on session information (for authentication) and so called (user) attributes for authorization (access control decisions), all found/expected as attributes in the HTTD header and put there in the fist place by the said Shibboleth Service Provider ('SP'). </p>
+<p>That means, the web application must be under the &quot;hood&quot; or &quot;awareness&quot; of a Shibboleth Service Provider upstream.</p>
+<p>The information flow:</p>
+<img src="img/lazySession.small.png" /><p>For our shhaa filter the right-hand-side (j2ee web-app) of the diagram is interesting:<br />
+the Service Provider exports session- and user-attributes to the HTTP Header where the SHHAA Filter can find and exploit this data and make them easy available to the web-app (developer) by a simple API.</p>
+<ul><li>on accessing a protected resource the Service Provider makes sure that the accessing user is authenticated</li>
+<li>therefore he contacts initially the Identity Provider of the user's &quot;home organisation&quot;<br />
+(the site where the user's login-account is hosted and the user is doing his log-in)</li>
+<li>the identiy provider handles the actual login and sends (using <a href="http://saml.xml.org/saml-specifications" class="externalLink">SAML</a>
+, via a secure channel) the Service Provider information<br />
+about the login-status (socalled SAML Authentication Statement)&#160; and some (controlable/configurable) user attributes (socalled SAML Attribute-Statement)</li>
+<li>in a classical Shib SP setup the SP will use those attributes for this access-control decisions</li>
+<li>the SP can be confiugred in such ways, that he (the SP as front-end webserver) passes through the original request to the downstream webapplication without further attibute-checks (no further SP authorization)<br />
+but to export those attributes as Apache Webserver Environment variables or (and) into the HTTP Header (attributes)<br />
+<a href="install.html">learn more about Shibboleth Lazy Session on the installation howto</a>
+. </li>
+<li>so that any downstream web application can make use by iself from those attributes</li>
+<li>SHHAA Filter is just a thin API to enable webapplication developers to integrate this setup easily in their application<ul><li>and have an easy and usefull API available</li>
+<li>to extract attribute information</li>
+<li>with the option to configure in SHHAA own, application specific access-rules for different locations,<br />
+just as the native Shibboleth SP, based on the (pre-fetched) attributes </li>
+<li>and implement their own, application specific access-control<br />
+(by exploiting the given attributes (via the SHHAA API)<br />
+and connecting those data possibly with the own application's user- and authorization system (e.g. in the webapplicions database)) </li>
+</ul>
+</li>
+</ul>
+<div class="section"><h4>SHHAA Session Awareness - the Filter's Authentication Pillar</h4>
+<p>The Filter's session handling is fully based on Shibboleth SP session information put in the HTTP header by an upstreamed SP.<br />
+One could say the filter in fact does not handle authentication at all but instead delegates it fully to the said Shibboleth Service Provider and its AAI Framework behind. </p>
+<p>shhaa listens to this special SP attributes in the header and immediately recognizes if something has changed: </p>
+<p>Changes of those attributes always indicate a change in the users (Shibboleth SSO-)login- and current-session status.</p>
+<p>Recognized attributes are * a Shibboleth-SP Session-ID, * the originally authenticating Identity-Provider (its socalled entity-ID) * and the login-timestamp.</p>
+<p>Any change of those attribues means a changed session, even if it is the same user having &quot;just reapeated&quot; his login.</p>
+<p><b>Fallback to Anonymous:</b>
+<br />
+If/As-long-as the shhaa filter cannot find any SP session data (e.g. due to a <a href="install.html">Shibboleth Lazy Session Setup, @see installation howto</a>
+,<br />
+it will fall-back-to and provide an anonymous username (configurable, default &quot;anonymous&quot;) and the usual (java) web application JSESSIOND as session identfier. </p>
+</div>
+<div class="section"><h4>SHHAA Access Control - its Authorization Pillar</h4>
+<p>shhaa filter comes with an own authorization module, too. </p>
+<p>It works similar to the native Shibboleth SP authorization and uses the (pre-fetched) user attributes, originally provided by the user's Identiy Provider, as basis for its access control decisions. </p>
+<p>The idea is to give the developers using shhaa for their webapps the option<br />
+to enforce their own, &quot;local&quot; autzorization rules, without having to configure/mess-arround-with the native Service Provider in front of the webapp. </p>
+<ul><li>The access-rules can be configured (as on native Shib-SP) on a &quot;Location&quot; basis, that means, one can have separate, different rules for any (web application) path (&quot;URL&quot;).</li>
+<li>The most basic rule just check for a &quot;valid user&quot;, means the user have to have been authenticated/have a valid (SSO) login/session;</li>
+<li>Furhter one can configure easily access rules based on the found user-attributes<br />
+(initially provided in the first place by the Identiy Provider the user has authenticated by).</li>
+<li>more complex, attribute-based access-rules can be configured using logical rules tied with AND/OR/NOT</li>
+<li>for details please refer to <a href="config.html"> configuration howto</a>
+. </li>
+</ul>
+</div>
+<div class="section"><h4>The SHHAA Flow</h4>
+<p>The exact behavior of shhaa filter highly depends on its configuration details (@see <a href="config.html"> configuration howto</a>
+).</p>
+<p>But its important to understand for a developer using shhaa,<br />
+that it can do automatically re-route (forwards/redirects) original requests to different locations depending on the circumstances:<br />
+so it can re-route automatically to a (SSO) login site if needed (user not logged in yet), or display an access-denied page, a logged-in information page etc...</p>
+<p>usually it acts like this: </p>
+<ul><li>fallback to anonymous:<br />
+if no valid (SSO) session can be found,<br />
+shhaa will use it's fallback-user config and provide an anonymous user,<br />
+default user-name: &quot;anonymous&quot; </li>
+<li>protection: <br />
+shhaa displays an access-denied page&#160; if a users accesses a protected location without prior login (SSO) or insufficient authorization (his attributes do not match the configured attribute-rules/requirements) </li>
+<li>auto-login:<br />
+if a protected location is (tried to) access,<br />
+shhaa will automatically redirect to the (configred) SSO login site;<br />
+after a successfull authentication there, the site-flow should come back to the orignal request</li>
+<li>auto-recognition of login-status:<br />
+as said shhaa relies fully on the SSO login provided by the Shibboleth Service Provider an its AAI system behind;<br />
+therefore it needs to recognize and take over automatically external changes of the login status:</li>
+<li>to notify users about any (possibly externally invoked) login state changes: <ul><li>shhaa displays a logged-IN info page once,<br />
+as soon as it recognizes a new, valid SSO login (Shib-SP session)\</li>
+<li>shhaa displays a logged-OUT/expired page once,<br />
+as soon as it recognizes that the last found SSO session (from the previous request) differs from the current one</li>
+</ul>
+<p>both notifications are displayed (re-route/forward) only once on the request the issue has been recognized,<br />
+on the next request (e.g. reload) the originally requested site is provided... </p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+      </div>
+    </div>
+    <div class="clear">
+      <hr/>
+    </div>
+    <div id="footer">
+      <div class="xright">&#169;  
+          2009-2010
+    
+          computing center garching of the max planck society
+          
+  
+
+  
+    
+            
+  
+    
+  </div>
+      <div class="clear">
+        <hr/>
+      </div>
+    </div>
+  </body>
+</html>
+
+<!-- Localized -->

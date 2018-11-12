@@ -1,0 +1,117 @@
+SHHAA Filter Usage
+
+*Using the SHHAA-Filter API
+
+  <<you can find a usage-samples on the shhaa-demo web-app.>>\
+  (follow the "Demo" link on the right upper corner)
+
+
+** Single Sign On & Single Log Out
+
+  shhaa exploits the "external" SSO and SLO mechanisms of a upstream Shibboleth-SP in front of the (shhaa filter's) web appliction. 
+
+  Therefore it does <not> handle login/logout itself, but is just aware of this "external SSO" session status. 
+
+  Even though, to make your live easier,\
+  you can configure & use shhaa to invoke these SSO/SLO actions. 
+
+
+*** the hard way
+
+  - adding "hardcoded" SSO/SLO links yourself.
+
+  as said actual SSO/SLO lives outside the direct scope from shhaa.\
+  but, using Shibboleth, one can invoke SSO and SLO by a link reference (to the proper targets in your Shibboleth Service Provider). 
+
+  all you need to know are the proper URLs and link syntax,\
+  to tell your (Shibboleth) Service Provider what to do (login or logout) 
+  and where to return to afterwards. 
+
+  a typical Shibbleth Service Provider SSO/SLO links look like: 
+
+  * SSO link: \ <<<http://foo.org/Shibboleth.sso/Login?target=http://foo.org/sample/myapp/bla.jsp>>>
+
+  * SLO link: \ <<<http://foo.org/Shibboleth.sso/Login?return=http://foo.org/sample/myapp/bla.jsp>>>
+
+  []
+  
+  where the plain URL part are the addresses of the SP profile handler for the SSO/SLO actions\
+  and the query part (url parameters) tell the SP where to return after those actions\
+  (note the different parameter names: "target" vs. "return")
+
+  you can add such links anywhere in your app,\
+  shhaa will recognize the external SSO status on the next request. 
+
+
+*** the easy way
+
+  - let shhaa construct the proper SSO/SLO links
+
+  also here, shhaa does not handle the actual SSO/SLO itself,\
+  it is still fully relying on the SP in the background (upstream). 
+
+  still it might be just easier to let shhaa do the calls for SSO/SLO to the upstream Shibboleth Service Provider;\
+  why bother with the whole Shibboleth/SAML details when shhaa can do it for you.
+
+  simply {{{config.html} configure}} <<<\<sso/\>>>> and <<<\<slo/\>>>> - including the <<<action>>> attribute -
+  in the <<<\<authentication/\>>>> section of the shhaa config file,\
+  and you can shhaa let do the job by any link which includes those (actions) as <<<\<actionparameter\>>>>,\
+  e.g:
+
+  * SSO link: \ <<<http://foo.org/sample/myapp/bla.jsp?shhaaDo=sso>>>
+
+  * SLO link: \ <<<http://foo.org/sample/myapp/bla.jsp?shhaaDo=slo>>>
+
+
+
+** Getting the Current User
+
+  shhaa does override the dedicated standard methods in the {{{http://java.sun.com/javaee/5/docs/api/javax/servlet/http/HttpServletRequest.html}HttpServletRequest}}: 
+
+  *{{{http://java.sun.com/javaee/5/docs/api/javax/servlet/http/HttpServletRequest.html#getRemoteUser()}#getRemoteUser()}}:
+  {{{http://java.sun.com/j2se/1.5.0/docs/api/java/lang/String.html}String}}
+
+  *{{{http://java.sun.com/javaee/5/docs/api/javax/servlet/http/HttpServletRequest.html#getRemoteUser()}#getUserPrincipal()}}:
+  {{{http://java.sun.com/j2se/1.5.0/docs/api/java/security/Principal.html}java.security.Principal}}
+
+  @see also {{{apidocs/de/mpg/aai/shhaa/AAIServletRequest.html}AAIServletRequest}}
+
+  shhaa provides as Principal (User) instance:  @see {{{apidocs/de/mpg/aai/shhaa/model/AuthPrincipal.html}AuthPrincipal}}
+
+  []
+
+
+** Getting Session Information - AuthenticationContext
+
+  shhaa provides a dedicated class to hold and provide all its user- and session information, incl. user-attributes:\
+  {{{apidocs/de/mpg/aai/shhaa/context/AuthenticationContext.html}AutenticationContext}}
+
+  plus a special provider class to conveniently get this AuthenticationContext:\
+  {{{apidocs/de/mpg/aai/shhaa/context/AuthenticationContextHolder.html}AutenticationContextHolder}}
+
+
+  Usage:
+
+  * from your web application's presentation layer:\
+  ({{{http://java.sun.com/javaee/5/docs/api/javax/servlet/http/HttpServletRequest.html}request}} <is> available)
+
++---------------------------------------------------------+
+	AuthenticationContext authCtx = null; 
+	
+	authCtx = AuthenticationContextHolder.get(request);
++---------------------------------------------------------+
+
+  * from your business layer:\
+  ({{{http://java.sun.com/javaee/5/docs/api/javax/servlet/http/HttpServletRequest.html}request}} <is not> present/available)
+
++---------------------------------------------------------+
+	AuthenticationContext authCtx = null; 
+	
+	authCtx = AuthenticationContextHolder.get();
++---------------------------------------------------------+
+
+  []
+
+  <<you can find more detailed usage-samples on the shhaa-demo web-app.>>\
+  please follow the "Demo" link on the right upper corner...
+

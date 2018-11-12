@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="urn:idpproxy:shibboleth:2.0:resolver" xmlns="http://www.w3.org/2001/XMLSchema"
+    xmlns:resolver="urn:mace:shibboleth:2.0:resolver" elementFormDefault="qualified">
+
+    <import namespace="urn:mace:shibboleth:2.0:resolver"
+        schemaLocation="classpath:/schema/shibboleth-2.0-attribute-resolver.xsd" />
+
+    <complexType name="IdPProxy">
+        <annotation>
+            <documentation>
+               IdPProxy DataConnector with Shib2
+            </documentation>
+        </annotation>
+        <complexContent>
+            <extension base="resolver:BaseDataConnectorType">
+            </extension>
+        </complexContent>
+    </complexType>
+
+</schema>

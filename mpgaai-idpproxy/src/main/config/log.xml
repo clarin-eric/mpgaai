@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+	<appender name="RootConsoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<pattern>%p - %d{yyyy-MM-dd HH:mm:ss:SSS} [%c#%M:%L] :: %m%n</pattern>
+		</layout>
+	</appender>
+
+	<appender class="ch.qos.logback.core.rolling.RollingFileAppender"
+		name="RootFileAppender">
+		<file>${catalina.base}/logs/idpproxy.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>${catalina.base}/logs/idpproxy-%d{yyyy-MM-dd}.log</FileNamePattern>
+		</rollingPolicy>
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<pattern>%p - %d{yyyy-MM-dd HH:mm:ss:SSS} [%c#%M:%L] :: %m%n</pattern>
+		</layout>
+	</appender>
+
+	<logger name="de.mpg.aai.idpproxy">
+		<level value="DEBUG" />
+	</logger>
+
+	<root>
+		<level value="ERROR" />
+		<appender-ref ref="RootFileAppender" />
+		<!-- appender-ref ref="RootConsoleAppender" /-->
+	</root>
+
+</configuration>

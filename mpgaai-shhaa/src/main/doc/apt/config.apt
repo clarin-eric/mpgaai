@@ -1,0 +1,546 @@
+SHHAA Filter Configuration
+
+* The Configuration File - Location, Name
+
+  Per default the shhaa config file is expected in your webapp's \ <<</WEB-INF/>>> \ directory, named \ '<<<shhaa.xml>>>':
+  
++---------------------------------------------------------+
+/{my-webapp-root}/WEB-INF/shhaa.xml
++---------------------------------------------------------+
+   
+  but you are free, to specify explicitely different location anywhere on your filesystem, 
+  by specifying the location in your application's <<<web.xml>>>\
+  {{{install.html#config-file-location}@see install howto - config file location}}
+  
+  in fact, you are even free to keep the shhaa-config content (the xml) inside another xml file 
+  (maybe you want to keep the number of your config-files low and clear; 
+  of course this works only if the other xml's XSD/DTD allows this):\
+  shhaa actualy does "just" look inside the configured (xml) file 
+  and looks up <there> its (xml) configuration's ROOT node \ '<<<\<shhaa\>>>>':\
+  so, e.g. imagine you have configured your own <<<web.xml>>> as shhaa config file (kind of "self-reference"),\
+  you just move the whole shhaa config inside this file (here <<<web.xml>>>), like: 
+
++---------------------------------------------------------+
+<web-app>
+  <display-name>my-app simple sample</display-name>
+  
+  <!-- SHHAA config file location: here, inside web.xml -->
+  <context-param>
+    <param-name>ShhaaConfigLocation</param-name>
+      <param-value>/WEB-INF/web.xml</param-value>
+  </context-param>
+    
+  <!-- my usual webapp's web.xml config... -->
+    
+    
+  <!-- MY SHHAA CONFIG (inside web.xml) -->
+  <shhaa>
+    
+    	<!-- shhaa config details... -->
+    	
+  </shhaa>
+  
+</web-app> 
++---------------------------------------------------------+
+
+
+  
+*Configuration & Functions
+
+  The \ <<<shhaa.xml>>> \  configuration file consists of five major blocks,\ 
+  which are described in details in the following sub chapters:
+  
+  [\<webapp/\>] - information about the webapplication, esp. its official address (URL) from external
+  
+  [\<authentication/\>] - here goes any config concerning authentication and reference (URLs) to the utilized Shibbleth Service-Provider and AAI system
+  
+  [\<composition/\>] - tells the filter how and from where to aggregate & compose the user-attributes
+   
+  [\<authorization/\>] - the configuration of access-control for different "locations" (web-app paths), based on the fetched user attributes
+   
+  [\</handler\>] - specifies the behavior of the shhaa-filter for the different use-cases, like shall it display a logged-in-info notification etc... 
+
+
+**webapp
+  
+  *<<<\<webapp/\>>>>\
+  <optional>\
+  often the actual application server has another web-server (e.g. in DMZ) as frontend, so that app-server host names 
+  do not necessarily reflect the host-names (url domain) their web-app are officially accessible under/by.\
+  (e.g. imagine a proxy setup where your app-server is internally, behind the firewall 
+  and you proxy by a offical webserver (URL) in your DMZ to your actual app-server)
+  
+  the shhaa filter needs to know the official webapp URL to construct the proper return URL when it does the re-routing (redirects) 
+  to the external Shibbleth login (Single Sign On - SSO) and logout (Single Logout - SLO): 
+  
+  per default it uses the information from the container (host name, webapp context path); 
+  only if this data are invalid, due to a "proxy" setup as described above, the shhaa filter needs this \<webaapp\> information about the official URL.
+   
+   *<<<\<host/\>>>>\
+   <optional>\
+   <default: hostname from request>\
+   official host name / domain of the web application
+
+   *<<<\<context/\>>>>\
+   <optional\>
+   <default: context path from request>\
+   official context path of this web application 
+
+   *<<<\<module/\>>>>\
+   <optional>\
+   <default>: "<<<false>>>"\
+   special flag for modular web applications:\
+   that means, web applications which are "under the hood" of other (web) applications ("a parent webapp").\
+   in scenario that (a user on) the parent webapp has already done a successful login and is now accessing our webapp 
+   one might want the shhaa filter NOT to show again the login-notification page.\
+   Therefore configure shhaa for this webapp as "module":\
+   if true: no/omit display of login-info on <<initial, first>> access with a valid (SSO) session \
+   NOTE: on a repeated (log-out and re-) login from within this ("child") webapp, shhaa WILL display the login-info, even with module "true"
+
+  []
+
+  Sample:
+
++---------------------------------------------------------+
+	<webapp>
+		<!-- my official web-app URL: http://foo.org/sample/myapp/  -->
+		<host>http://foo.org</host>
+		<context>/sample/myapp</context>
+
+		<!-- modular (under the hood of a parent webapp) -->
+		<module>true</module>
+	</webapp>
++---------------------------------------------------------+
+
+
+
+**authentication
+
+  *<<<\<authentication/\>>>>\
+  <required>\
+  configurations for Single Sign On (SSO), Single Logout (SLO), User- and Session Information: 
+   
+   *<<<\<shibheader/\>>>>\
+   <required>\
+   configurations to tell the filter which http header aka Shibboleth-SP attributes to use for the different purposes: 
+    
+    *<<<\<username/\>>>>\
+    <required>\
+    tell shhaa which attribute(s) is used to lookup the logged-in user(name)\
+    NOTE: one can configure multiple attribues here (each as own \<username\> tag):\
+    shhaa will check one after another, the first hit (found non-empty value) will be used. 
+    
+    *<<<\<session/\>>>>\
+    <optional>\
+    <default>: "<<<Shib-Session-ID">>>\
+    attribute (name) used to recognize and utilize as SSO/Shibboleth-SP session identifier
+    
+    *<<<\<idp/\>>>>\
+    <optional>\
+    <default>: "<<<Shib-Identity-Provider">>>\
+    attribute (name) used to read in the actual authenticating Identiy Provider (entity-ID)
+    
+    *<<<\<timestamp/\>>>>\
+    <optional>\
+    <default>: "<<<Shib-Authentication-Instant">>>\
+    attribute (name) used to read in the login time(stamp)
+   
+   *<<<\<fallback/\>>>>\
+   <optional>\
+   configurations for user- and session information if no SSO login/session is present:
+    
+    *<<<\<username/\>>>>\
+    <optional>\
+    <default>: "<<<anonymous">>>\
+    Fallback anonymous username used in case no SSO login/session could be found
+   
+   *<<<\<sso/\>>>>\
+   <optional>\
+   URL for Single Sign On to/on the (upstream) Service Provider this webapp lives under (is protected by)
+    
+    *<<<action>>>\
+    <optional>\
+    <default>: "<<<sso">>>\
+    value of the URL {{{config.html#aactionparam}action parameter}}: when recognized shhaa will invoke (redirect) the SSO action for this webapp
+   
+   *<<<\<slo/\>>>>\
+   <optional>\
+   URL for Single Log Out from/on the (upstream) Service Provider this webapp lives under (is protected by)
+    
+    *<<<action>>>\
+    <optional>\
+    <default>: "<<<slo">>>\
+    value of the URL {{{config.html#aactionparam}action parameter}}: when recognized shhaa will invoke (redirect) the SLO action for this webapp
+
+  []
+
+  Sample:
+
++---------------------------------------------------------+
+	<authentication>
+		<shibheader>
+			<username>eduPersonPrincipalName</username>
+			<username>eppn</username>
+			<session>Shib-Session-ID</session>
+			<idp>Shib-Identity-Provider</idp>
+			<timestamp>Shib-Authentication-Instant</timestamp>
+		</shibheader>
+		<fallback>
+			<username>anonymous</username>
+		</fallback>
+		<sso action="lI">http://foo.org/Shibboleth.sso/Login</sso>
+		<slo action="lO">http://foo.org/Shibboleth.sso/Logout</slo>
+	</authentication>
++---------------------------------------------------------+
+
+
+
+
+**composition
+
+  *<<<\<composition/\>>>>\
+  <optional>\
+  configurations of additional (user-) attributes to lookup in the http header,\
+  used lateron as basis for access-control decisions (see below "\<authorziation\>")
+    
+    *<<<action>>>\
+    <optional>\
+    value of the URL {{{config.html#aactionparam}action parameter}}: when recognized shhaa will invoke a refresh/reload of the current user's attributes\
+    NOTE:  similar as the native Shibboleth Service Provider these attriubtes are resolved <just once> at inital login/access and kept "in cache" for the session life-time
+   
+   *<<<\<shibheader/\>>>>\
+   <optional>\
+   configurations to tell the filter which http header aka Shibboleth-SP attributes to use
+    
+    *<<<\<attribute/\>>>>\
+    <required> (if \<shibheader/\> present)\
+    attribute(name) to look up in the httpd header and read in (whith name & value(s))\
+    note: you can specify multiple attributes here (each in an own tag)
+   
+   *<<<\<jaas/\>>>>\
+   <optional>\
+   designed to "plug-in" {{{http://java.sun.com/javase/technologies/security/}JAAS}} here:
+    
+    *<<<\<configname/\>>>>\
+    <optional>\
+    configure the jaas config file target section here (the "section name"):\
+    if this is configured, shhaa wil invoke jaas during attribute aggregation, 
+    using the configuration section (inside the jaas config file) as configured here:\
+    any (jaas) implementation invoked hereby then can resolve further attributes (or in fact "what ever") 
+    and add its results to the Subject.\
+    shhaa will use all attributes ("Credentials") it gets from the Subject by\
+    <<<subject.getPublicCredentials(AuthAttribute.class); >>>\
+    \<=\> the invoked jaas impl must add instances/impls of <<<de.mpg.aai.shhaa.model.AuthAttribute>>>\
+    in order shhaa can make use of them lateron (on authorization)
+
+  []
+
+  Sample:
+
++---------------------------------------------------------+
+	<composition action="rF">
+		<shibheader>
+			<attribute>eduPersonAffiliation</attribute>
+			<attribute>eduPersonEntitlement</attribute>
+			<attribute>email</attribute>
+			<attribute>ou</attribute>
+			<attribute>o</attribute>
+		</shibheader>
+		<jaas>
+			<configname>AAI-ATTIRIBUTES</configname>
+		</jaas>
+	</composition>
++---------------------------------------------------------+
+
+
+
+**authorization
+
+  *<<<\<authorization/\>>>>\
+  <optional>\
+  configuration of access permission to given location depending on the users attributes
+   
+   *<<<\<location/\>>>>\
+   <optional>\
+   specifies the access requirements for this "location" (see "target" below)
+    
+    *<<<target>>>\
+    <required>\
+    the location target to protect - a certain webapp (sub)path
+    
+    *<<<match>>>\
+    <optional>\
+    <accepted values>: "<<<case|nocase|regex>>>"\
+    <default>: "<<<case>>>"\
+    "match-mode" to let shhaa figure out whether the current reqeuest matches this configured location:
+
+     * <<<case>>> - case sensitive check
+
+     * <<<nocase>>> - case <<in>>sensitive check
+
+     * <<<regex>>> - treat configured value as regular expression to match 
+    
+    *<<<\<Rule/\>>>>\
+    <optional>\
+    connects (its enclosed) requirements (@see below) logically:
+
+     *<<<logic>>>\
+    <optional>\
+    <accepted values>: "<<<AND|OR>>>"\
+    <default>: "<<<AND>>>"
+
+     * <<<AND>>> - all (enclosed) requiments have to be fulfilled
+
+     * <<<OR>>> - one of the (enclosed) requiments have to be fulfilled
+    
+    *<<<\<Require/\>>>>\
+    <optional>\
+    specifies a requirement condition/rule: the attribute of the configured name/id is expected to hold the configured value
+
+     *<<<id>>>\
+     <required>\
+     the required attribue's name/identifier
+    
+     *<<<match>>>\
+     <optional>\
+     <accepted values>: "<<<case|nocase|regex>>>"\
+     <default: "<<<case>>>"\
+     "match-mode" specifies how shhaa checks the match of the configured vs the actual found attribute <value> (<not> the attribute name/id, though!)
+
+      * <<<case>>> - case sensitive check 
+
+      * <<<nocase>>> - case <<in>>sensitive check
+
+      * <<<regex>>> - treat configured value as regular expression to match 
+    
+    *<<<\<miss/\>>>>\
+    <optional>\
+    inverse counter condition to \<require\> (@see above):\
+    'miss' matches on negative hits ("a miss"),\
+    that means the <absence> of the configured attribute/value is required to meet this condition!\
+    therefore (think it through) its interpretation strongly depends on how - by which logic rule - it is enclosed:\
+
+     * <<whithin>><<<OR>>>:\
+     a <single> miss/absence of the configured attribute-value pair is sufficient in order to evaluate true\
+     \<=\> as soon as just one ("on the first") configured attribute-value pair is indeed <not> found/does not exist =\> the "miss requirement" is met
+     
+     * <<within>><<<AND>>>:\
+     logic <and> requires <all> configured miss-requirements to be met in order to evaluate true,\
+     \<=\> as soon as just one configured attribute-value pair exists/is found =\> the "miss requirement" is <not> fulfilled
+
+
+
+  []
+
+  Samples:
+
+  * <<simple valid user>>\
+    in no specific attributes are defined,\
+    the location requires "just" a valid (SSO) user/session to be present;\
+    as long a valid sso session/user is present, access to the webapp path "/simple/*" is granted 
+
++---------------------------------------------------------+
+<authorization>
+
+	<location  target="/simple/*" />
++---------------------------------------------------------+
+  
+  
+  * <<simple attribute requirement>>: <AND>\
+  specific attributes as access requirments are configured,\
+  to access, an user needs to have <all> matching attribute (name & values) in "his" attribute set 
+  (provided orignally by the (user's) Identiy-Provider and retrieved through the webapp's upstream Service Provider (by means of the http header (attributes)))
+
++---------------------------------------------------------+
+	<location  target="/secure/*" >
+		<require id="eduPersonAffiliation">staff</require>
+		<require id="eduPersonEntitlement">urn:foo.org:myapp:admin</require>
+	</location>
++---------------------------------------------------------+
+  here:\
+  the user requires attributes: \ '<eduPersonAffiliation>' with value "<staff>" \ <<AND>> \ '<eduPersonEntitlement>' with value "<urn:foo.org:myapp:admin>"
+
+
+  * <<simple attribute requirement>>: <OR>\
+  specific attributes as access requirments are configured,\
+  to access, an user needs to have <at least one> matching attribute (name & values) in "his" attribute set 
+  (provided orignally by the (user's) Identiy-Provider and retrieved through the webapp's upstream Service Provider (by means of the http header (attributes)))
+
++---------------------------------------------------------+
+	<location  target="/secure/*" >
+		<rule logic="OR">
+			<require id="eduPersonAffiliation">staff</require>
+			<require id="eduPersonAffiliation">employee</require>
+		</location>
++---------------------------------------------------------+
+  here:\
+  the user requires attributes: \ '<eduPersonAffiliation>' with value "<staff>" \ <<OR>> \ (same attribute) value "employee"
+
+
+  * <<more complex logic rules>>:
+
++---------------------------------------------------------+
+	<location match="regex" target="/protected/.*" >
+		<rule logic="AND">
+			<require match="regex" id="eduPersonEntitlement">urn:foo.org:myapp:.*</require>
+			<rule logic="OR">
+				<require id="eduPersonAffiliation">staff</require>
+				<require id="eduPersonAffiliation">employee</require>
+				<miss id="eduPersonAffiliation">library-walk-in</miss>
+			</rule>
+			<miss id="ou">our-rival-group</miss>
+		</rule>
+	</location>
++---------------------------------------------------------+
+  here:\
+  this ruleset requires to grant access that the user:\
+  \ - has an valid <eduPersonEntitlement> (some "role" matching the given regular expression, like e.g. 'urn:foo.org:myapp:manager')\
+  \ - <<<AND>>> is <not> in the organizatinal unit 'our-rival-group'\
+  \ - <<<AND>>> ( is 'staff' <<<OR>>> 'employee' <<<OR>>> has-not-'library-walk-in' )
+
+  []
+
+
+
+**handler
+
+  *<<<\<handler/\>>>>\
+  <optional>\
+  configures the general behavior of the shhaa filter and its "view control" 
+   
+   *<<<\<ignore/\>>>>\
+   <optional>\
+   defines locations (your webapp paths) which shall be ignored = not handled by shhaa\
+   not handled means, no session checks (authentication), no access control (authorization), no Anonymous user/session provided
+    
+    *<<<\<location/\>>>>\
+    <optional>\
+    specifies the webapp path destined to be ignored
+
+     * <<<target>>> - exactly the same as <<<\<location/\>>>> in <<<\<authorization/\>>>> as decribed there (@see above)
+
+     * <<<match>>> - dto
+   
+   *<<<\<readonly/\>>>>\
+   <optional>\
+   <default>: "<<<false>>>"\
+   specifies whether shhaa shall set the provided {{{http://java.sun.com/javase/6/docs/api/javax/security/auth/Subject.html}Subject}}
+   and its {{{http://java.sun.com/javase/6/docs/api/javax/security/auth/Subject.html#getPublicCredentials%28%29}(public) credentials}} 
+   to {{{http://java.sun.com/javase/6/docs/api/javax/security/auth/Subject.html#getPublicCredentials%28%29}read-only}}
+
+
+   *<<<\<autologin/\>>>>\
+   <optional>\
+   <default>: "<<<true>>>"\
+   specifies whether shhaa shall automatically redirect to the SSO login site (if configured @see <<<\<sso\>>>>)
+   on initial access to a protected location (and the user has not logged-in yet (no SSO session present))\
+   if "<<<false>>>" - instead of the redirect-to-SSO-login access to the requested site is denied\
+   ('access-denied' page will be shown, @see below)
+
+
+   *{<<<\<actionparam/\>>>>}\
+   <optional>\
+   <default>: "<<<shhaaDo>>>"
+   name of the url parameter shhaa shall recognize to perform certain actions depending on the value found there\
+   @see "<<<action>>>" attributes in tags <<<\<sso\>>>>, <<<\<slo\>>>>, <<<\<composition\>>>> and all <<<\<pages\>>>>-childs
+
+
+   *<<<\<pages/\>>>>\
+   <optional>\
+   represents a basic kind of "view control" of shhaa:\
+   shhaa can display (forward to) own views/sites instead of the orignal request(ed site) 
+   for the purpose of user-notification on certain conditions:\
+   initial (SSO) login, logged-out or session-change, and access-denied\
+   there are three special configuration for each of this use-cases: 
+
+    *<<<\<info/\>>>>\
+    <optional>\
+    if configured, shhaa will forward to this page if a initally/new SSO session is recognized;\
+    this fwd is done only once, on the next request (e.g. brower reload) the original requested site is shown
+
+    *<<<\<expired/\>>>>\
+    <optional>\
+    this site is presented (if in fact configured here) when an prevously existing SSO session has suddenly gone <or changed>\
+    e.g. due to a log-out event <or> a new (re-)login.
+    NOTE: a changed session is in fact recognized and also treated as expired,
+    even if the actual username has <not> changed (a repeated/re-login of the same user)\
+
+    *<<<\<denied/\>>>>\
+    <optional>\
+    <default>: "<<</pages/noaccess.jsp>>>"
+    is <always> (note the default) presented when the access control (authorization) evaluated negative
+
+   each of these three tags can have optionally bear an <<<action>>> attribute:\
+   - <<<action>>>
+   <optional>\
+   value of the URL {{{config.html#aactionparam}action parameter}}:\
+   if the action is recognized, shhaa will force the display of this configured page (ignoring the usual actual conditions)
+
+
+  []
+
+  Sample:
+
++---------------------------------------------------------+
+	<handler>
+	
+		<!-- don't run checks on "background resources" -->
+		<ignore>
+			<location target="/css/*" />
+			<location target="/img/*" />
+		</ignore>
+		
+		<!-- set the provided subject and its credentials to "read-only" -->
+		<readonly>true</readonly>
+
+		<!-- automatically redirect to SSO login on inital access to a protected site -->
+		<autologin>true</autologin>
+
+		<!-- url parameter name to recognize flags for actions shhaa shall perform -->
+		<actionparam>shhaaDo</actionparam>
+		
+		<!-- shhaa actions & view-control  -->
+		<pages>
+			<info action="dI">/pages/info.jsp</info>
+			<expired action="dE">/pages/expired.jsp</expired>
+			<denied action="dD">/pages/noaccess.jsp</denied>
+		</pages>
+		
+	</handler>
++---------------------------------------------------------+
+
+
+
+*shhaa.xml \ Reference
+
++---------------------------------------------------------+
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ROOT>
+{<shhaa>}
+
+	<webapp>
+		<!-- optional: 
+			the hostname by which the protected webapp is accessed
+			default: hostname from request  -->
+		<host>http://foo.mpg.de</host>
+		<!-- optional:
+			the context-path by which the protected webapp is accessed
+			default: context-path from request -->
+		<context>/sample/app</context>
+		<!-- optional 
+			special flag for modular web applications:
+			if true: no/omit display of login-info on initial access with valid session 
+			default: false -->
+		<module>false</module>
+	</webapp>
+	
+
+
+	
+</shhaa>
+</ROOT>
++---------------------------------------------------------+
+
+
+~~end.
