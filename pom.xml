@@ -45,7 +45,7 @@
     <modules>
         <module>modules/mpgaai-jaas</module>
         <module>modules/mpgaai-shhaa</module>
-        <module>modules/mpgaai-idpproxy</module>
+        <!--module>modules/mpgaai-idpproxy</module-->
     </modules>
 
     <name>mpgaai-m2root</name>
@@ -136,4 +136,11 @@
         </contributor>
     </contributors>
 
+    <distributionManagement>
+    <repository>
+      <id>Clarin</id>
+      <name>CLARIN Nexus Repository</name>
+      <url>https://nexus.clarin.eu/repository/Clarin/</url>
+    </repository>
+  </distributionManagement>
 </project>

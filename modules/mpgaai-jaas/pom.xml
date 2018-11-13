@@ -145,5 +145,11 @@
 		</contributor>
 	</contributors>
 
-
+        <distributionManagement>
+    <repository>
+      <id>Clarin</id>
+      <name>CLARIN Nexus Repository</name>
+      <url>https://nexus.clarin.eu/repository/Clarin/</url>
+    </repository>
+  </distributionManagement>
 </project>

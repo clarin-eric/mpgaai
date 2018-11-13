@@ -11,7 +11,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>de.mpg.mpgaai</groupId>
     <artifactId>mpgaai-shhaa</artifactId>
-    <version>1.0.7</version>
+    <version>1.0.8</version>
     <packaging>jar</packaging>
 
     <dependencies>
@@ -229,4 +229,12 @@
             <url>http://lux15.mpi.nl/nexus/content/repositories/MPI</url>
         </repository>
     </distributionManagement-->
+    
+    <distributionManagement>
+    <repository>
+      <id>Clarin</id>
+      <name>CLARIN Nexus Repository</name>
+      <url>https://nexus.clarin.eu/repository/Clarin/</url>
+    </repository>
+  </distributionManagement>
 </project>
