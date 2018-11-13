@@ -157,6 +157,10 @@ public class ShibHeaderAuthnMod extends BaseAuthnMod implements AuthenticationMo
 	}
         
         private String decodeHeaderValue(String name, String value) {
+            if(value == null) {
+                return null;
+            }
+            
             try {
                 return new String(value.getBytes("ISO8859-1"),"UTF-8");
             } catch(UnsupportedEncodingException ex) {
