@@ -1,5 +1,6 @@
 package de.mpg.aai.shhaa.authn;
 
+import de.mpg.aai.shhaa.HttpHeaderUtils;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -14,7 +15,6 @@ import org.slf4j.LoggerFactory;
 
 import de.mpg.aai.shhaa.config.Configurable;
 import de.mpg.aai.shhaa.context.AuthenticationContext;
-import java.io.UnsupportedEncodingException;
 
 
 /**
@@ -75,7 +75,7 @@ public class ShibHeaderAuthnMod extends BaseAuthnMod implements AuthenticationMo
 	
 	
 	private String getHeader(String target, HttpServletRequest request) {
-		String result = decodeHeaderValue(target, request.getHeader(target));
+		String result = HttpHeaderUtils.decodeHeaderValue(target, request.getHeader(target));
 		if(result != null)
 			result = result.trim();
 		log.trace("found header {}: {}", target, result);
@@ -92,7 +92,7 @@ public class ShibHeaderAuthnMod extends BaseAuthnMod implements AuthenticationMo
 					if(!(val instanceof String))
 						log.warn("found non-string header of type {}", val.getClass().getName());
 
-                                        String result = decodeHeaderValue(target, val.toString());
+                                        String result = HttpHeaderUtils.decodeHeaderValue(target, val.toString());
                                         if(result.isEmpty()) {
                                             log.trace("value for header {} is empty.", target);
                                         } else {
@@ -155,18 +155,4 @@ public class ShibHeaderAuthnMod extends BaseAuthnMod implements AuthenticationMo
 		}
 		return result;
 	}
-        
-        private String decodeHeaderValue(String name, String value) {
-            if(value == null) {
-                return null;
-            }
-            
-            try {
-                return new String(value.getBytes("ISO8859-1"),"UTF-8");
-            } catch(UnsupportedEncodingException ex) {
-                log.error(String.format("Failed to decode header [%s] value [%s] as UTF-8. Error=%s.", name, value, ex.getMessage()));
-                log.debug("Stacktrace:", ex);
-            }
-            return value;
-        }
 }

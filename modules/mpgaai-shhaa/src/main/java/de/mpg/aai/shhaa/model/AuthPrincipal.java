@@ -21,7 +21,7 @@ public class AuthPrincipal extends BasePrincipal {
 		super(username);
 	}
 	/**
-	 * @param attribues the attributes to set
+	 * @param attbs the attributes to set
 	 */
 	public void setAttribues(AuthAttributes attbs) {
 		this.attribues = attbs;

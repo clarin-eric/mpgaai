@@ -1,5 +1,6 @@
 package de.mpg.aai.shhaa.resolver;
 
+import de.mpg.aai.shhaa.HttpHeaderUtils;
 import java.util.Enumeration;
 import java.util.Set;
 
@@ -78,7 +79,11 @@ public class ShibHeaderAttbResolver implements AttributeResolverModule, Configur
 				// expecting just strings => treating everything like one (an exception makes not much sense: no cure)
 				// adding string or the found object's string representation
 				if(val instanceof String) {
-					vals = ((String)val).split(";");	// returns val in size-1 array if no further match 
+					String[] enc_vals = ((String)val).split(";");	// returns val in size-1 array if no further match 
+                                        vals = new String[enc_vals.length];
+                                        for(int i = 0; i < enc_vals.length; i++) {
+                                            vals[i] = HttpHeaderUtils.decodeHeaderValue(targetID, enc_vals[i]);
+                                        }
 				} else {
 					log.error("found non-string attribute of class '{}', using #toString()", 
 							val.getClass().getName());
