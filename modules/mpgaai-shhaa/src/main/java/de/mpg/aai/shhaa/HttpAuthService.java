@@ -295,26 +295,18 @@ public class HttpAuthService implements Configurable {
 			host = hostUrl.toString();
 		}
                 
-                log.info("genReturnTarget 1: "+host);
-                
 		final String ctxPath = this.config.getcontextPath() != null
 			? this.config.getcontextPath()
-			: request.getContextPath();
-		
-                
+			: request.getContextPath();                
                 
 		final StringBuffer result = new StringBuffer(shibTarget.toExternalForm());
 		result.append("?").append(param).append("=");
-		
-                log.info("genReturnTarget 2: "+result);
                 
 		final StringBuffer returnTarget = new StringBuffer();
 		returnTarget.append(host);
                 if(host.endsWith("/") && ctxPath.startsWith("/")) {                        
                         returnTarget.append(ctxPath.substring(1));
                 }
-		
-                log.info("genReturnTarget 3: "+returnTarget);
                 
 		// build proper return-to url: incl servlet path & query parameter
 		final String spath = request.getServletPath();
@@ -323,16 +315,12 @@ public class HttpAuthService implements Configurable {
 				returnTarget.deleteCharAt(result.length()-1);
 			returnTarget.append(spath);
 		}
-                
-                log.info("genReturnTarget 4: "+spath);
                         
                 // add servlet path path info
                 final String pathInfo = request.getPathInfo();
                 if(pathInfo != null && !pathInfo.isEmpty()){
                     returnTarget.append(pathInfo);
                 }
-                
-                log.info("genReturnTarget 5: "+returnTarget);
                 
 		// don't forget to append original request's query parameter for proper return-to 
 		String query = request.getQueryString();
@@ -349,9 +337,6 @@ public class HttpAuthService implements Configurable {
 		} catch (UnsupportedEncodingException ueE) {
 			throw new IllegalStateException("could not encode url " + returnTarget, ueE);
 		}
-                
-                log.info("genReturnTarget 6: "+returnTarget);
-                log.info("genReturnTarget 7: "+result.toString());
                 
 		return result.toString();
 	}
