@@ -307,15 +307,20 @@ public class HttpAuthService implements Configurable {
                 if(host.endsWith("/") && ctxPath.startsWith("/")) {                        
                         returnTarget.append(ctxPath.substring(1));
                 }
-                
+
 		// build proper return-to url: incl servlet path & query parameter
 		final String spath = request.getServletPath();
 		if(spath != null && !spath.isEmpty()) {
 			if(ctxPath.endsWith("/"))
 				returnTarget.deleteCharAt(result.length()-1);
+                        
+                        if(returnTarget.toString().endsWith("/") && spath.startsWith("/")) {
+                            returnTarget.deleteCharAt(returnTarget.length()-1);
+                        }
+                        
 			returnTarget.append(spath);
 		}
-                        
+                
                 // add servlet path path info
                 final String pathInfo = request.getPathInfo();
                 if(pathInfo != null && !pathInfo.isEmpty()){
@@ -332,6 +337,7 @@ public class HttpAuthService implements Configurable {
 			if(query != null && !query.isEmpty())
 				returnTarget.append("?").append(query);
 		}
+                
 		try {
 			result.append(URLEncoder.encode(returnTarget.toString(), "UTF-8"));
 		} catch (UnsupportedEncodingException ueE) {
