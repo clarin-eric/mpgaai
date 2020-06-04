@@ -23,6 +23,9 @@ import de.mpg.aai.shhaa.config.ConfigContext;
 import de.mpg.aai.shhaa.config.ConfigContextListener;
 import de.mpg.aai.shhaa.config.ConfigurationException;
 import de.mpg.aai.shhaa.context.AuthenticationContext;
+import java.nio.charset.Charset;
+import java.util.Collections;
+import java.util.Enumeration;
 
 /**
  * servlet filter implementation,
@@ -64,6 +67,15 @@ public class AuthFilter implements Filter {
 	@Override
 	public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException, ServletException {
 		log.trace("start aai auth filtering...");
+
+                String default_encoding = Charset.defaultCharset().name();
+                if(req.getCharacterEncoding() == null) {
+                    log.debug("Client did not specify character encoding. Using {} as default.", default_encoding);
+                    req.setCharacterEncoding(default_encoding);
+                } else {
+                    log.debug("Client specified {} as encoding.", req.getCharacterEncoding());
+                }
+                
 		if(!(req instanceof HttpServletRequest))
 			throw new IllegalArgumentException("expecting HttpServletRequest, found "+ req.getClass().getName());
 		HttpServletRequest request = (HttpServletRequest) req;

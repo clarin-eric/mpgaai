@@ -10,9 +10,8 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * simple bean holding db-connection configuration parameter 
@@ -23,7 +22,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class DbConnector {
 	/** the logger */
-	private static Log	_log = LogFactory.getLog(DbConnector.class);
+	private static Logger	_log = LoggerFactory.getLogger(DbConnector.class);
 
 	/** name of the jndi datasource to acquire database-connection from */
 	private String	jndiName		= null;

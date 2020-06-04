@@ -10,10 +10,9 @@ import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import de.mpg.aai.security.auth.model.BaseGroup;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -25,7 +24,7 @@ import de.mpg.aai.security.auth.model.BaseGroup;
  */
 public class SimpleRolesModule implements LoginModule {
 	/** the logger */
-	protected static Log	_log = LogFactory.getLog(SimpleRolesModule.class);
+	protected static Logger	_log = LoggerFactory.getLogger(SimpleRolesModule.class);
 	/** the subject to be authenticated */
 	private Subject			mSubject;
 	/** the subject's roles to be authorized by */

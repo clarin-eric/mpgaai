@@ -7,9 +7,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -41,7 +40,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class LoginQueryParser {
 	/** the logger */
-	private static Log	_log = LogFactory.getLog(LoginQueryParser.class);
+	private static Logger	_log = LoggerFactory.getLogger(LoginQueryParser.class);
 	
 	/** name of the default query config parameter to lookup the configured actual query string by (see {@link #init(String, Map)} */
 	public static final String		QUERYNAME_DEFAULT =	"query";

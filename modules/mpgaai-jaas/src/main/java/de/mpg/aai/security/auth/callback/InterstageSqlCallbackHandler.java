@@ -14,11 +14,10 @@ import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.security.auth.login.AccountNotFoundException;
 import javax.security.auth.spi.LoginModule;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import de.mpg.aai.security.auth.util.DbConnector;
 import de.mpg.aai.security.auth.util.LoginQueryParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * this implementation of a callbackhandler is a kind of interstage handler 
@@ -89,7 +88,7 @@ import de.mpg.aai.security.auth.util.LoginQueryParser;
  */
 public class InterstageSqlCallbackHandler implements CallbackHandler {
 	/** the logger */
-	private static Log	_log = LogFactory.getLog(InterstageSqlCallbackHandler.class);
+	private static Logger	_log = LoggerFactory.getLogger(InterstageSqlCallbackHandler.class);
 	
 	/** underlying callbackhandler to be delegated to */
 	private CallbackHandler	underlyingCbHandler = null;
@@ -243,7 +242,7 @@ public class InterstageSqlCallbackHandler implements CallbackHandler {
 			}
 			StringBuffer msg = new StringBuffer("resolved ");
 			msg.append(name).append(" to ").append(this.resolvedName);
-			_log.debug(msg);
+			_log.debug(msg.toString());
 		} catch(Exception eE) {
 			StringBuffer msg = new StringBuffer("failed to resolve username for ");
 			msg.append(name).append(": ").append(eE.getMessage());
