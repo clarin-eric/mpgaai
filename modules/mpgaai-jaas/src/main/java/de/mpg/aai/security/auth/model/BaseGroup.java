@@ -1,18 +1,17 @@
 package de.mpg.aai.security.auth.model;
 
 import java.security.Principal;
-import java.security.acl.Group;
 import java.util.Enumeration;
-import java.util.List;
+import java.util.Set;
 import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author megger
  *
  */
-public class BaseGroup extends BasePrincipal implements Group {
-	private List<Principal> members = new Vector<Principal>();
-	
+public class BaseGroup extends BasePrincipal implements Principal {
+	private Set<Principal> members = ConcurrentHashMap.newKeySet();
 
 	/**
 	 * {@inheritDoc}
@@ -20,51 +19,42 @@ public class BaseGroup extends BasePrincipal implements Group {
 	public BaseGroup(String username) {
 		super(username);
 	}
-	
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+	//@Override
 	public boolean addMember(Principal user) {
-		// important to check to avoid duplicates 
-		// <=> could not use a Set, instead used Vector
-		//	to have an easy getter to return Enumerations in #members()
-		//	<=> also must avoid duplicates for proper hashcode generation in #hashcode 
-		if(this.members.contains(user))
+		if(user == null)
 			return false;
 		return this.members.add(user);
 	}
-	
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+	//@Override
 	public boolean isMember(Principal user) {
 		return this.members.contains(user);
 	}
-	
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@SuppressWarnings("unchecked")
-	@Override
+	//@Override
 	public Enumeration<? extends Principal> members() {
 		return ((Vector) this.members).elements();
 	}
-	
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+	//@Override
 	public boolean removeMember(Principal user) {
 		return this.members.remove(user);
 	}
-	
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -77,8 +67,7 @@ public class BaseGroup extends BasePrincipal implements Group {
 		}
 		return result;
 	}
-	
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -89,7 +78,7 @@ public class BaseGroup extends BasePrincipal implements Group {
 		if(!(obj instanceof BaseGroup))	// strict
 			return false;
 		// check members: 
-		Enumeration<? extends Principal> otherMembers = ((Group) obj).members();
+		Enumeration<? extends Principal> otherMembers = ((BaseGroup) obj).members();
 		int count=0;
 		for(Principal member ; otherMembers.hasMoreElements() ; count++) {
 			member = otherMembers.nextElement();
@@ -99,8 +88,7 @@ public class BaseGroup extends BasePrincipal implements Group {
 		// ok, all other.members in this.members => same vice versa?
 		return this.members.size() == count;	// sufficient <=> this.members must contain no duplicates 
 	}
-	
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -108,10 +96,6 @@ public class BaseGroup extends BasePrincipal implements Group {
 	public int hashCode() {
 		int result = 1;
 		result = 31 * result + super.hashCode();	// using: name
-		// add members (ignore order) 
-//		for(Principal member : this.members) {
-//			result += 31 * result + (member ==null ? 0 : member.hashCode());
-//		}
 		result += 31 * result + this.members.hashCode();
 		return result;
 	}
@@ -126,6 +110,4 @@ public class BaseGroup extends BasePrincipal implements Group {
 		result.append(this.getName()).append("'");
 		return result.toString();
 	}
-	
-	
 }
