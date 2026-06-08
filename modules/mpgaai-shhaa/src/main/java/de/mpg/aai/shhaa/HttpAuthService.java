@@ -5,8 +5,8 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -402,7 +402,7 @@ public class HttpAuthService implements Configurable {
 	 * @param target can be null: in case return target to forward/redirect the current request (page-flow control) 
 	 * @return proper/up2date return value for {@link #handleAuth(HttpServletRequest, HttpServletResponse)}
 	 * @see AAIServletRequest
-	 * @see AuthFilter#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse, javax.servlet.FilterChain) 
+	 * @see AuthFilter#doFilter(jakarta.servlet.ServletRequest, jakarta.servlet.ServletResponse, jakarta.servlet.FilterChain) 
 	 */
 	private AAIServletRequest prepareResult(AuthenticationContext authCtx, HttpServletRequest request, String target) {
 		// synchronize attributes: subject to (shhaa)principal

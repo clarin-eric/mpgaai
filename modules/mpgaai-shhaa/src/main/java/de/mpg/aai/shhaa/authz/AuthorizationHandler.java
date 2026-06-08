@@ -3,8 +3,8 @@ package de.mpg.aai.shhaa.authz;
 import java.util.List;
 import java.util.Vector;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,7 +69,7 @@ public class AuthorizationHandler implements Configurable {
 		List<Location> locations = this.getLocationRules(path, request.getMethod());
 		// normally there should be only one location(rule-set) per path
 		if(locations.size() > 1)
-			log.info("found multiple location rules ({}) for single path {}", new Integer(locations.size()), path);
+			log.info("found multiple location rules ({}) for single path {}", locations.size(), path);
 		log.trace("found matching rules {}", locations.toString());
 		this.checkRequirements(authCtx, locations);
 	}

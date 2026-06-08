@@ -1,7 +1,7 @@
 package de.mpg.aai.shhaa.authn;
 
 import javax.security.auth.Subject;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import de.mpg.aai.shhaa.context.AuthenticationContext;
 

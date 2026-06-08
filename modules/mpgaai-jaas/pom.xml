@@ -34,12 +34,16 @@
                                 <version>1.0.4</version>
                                 <scope>compile</scope>
                         </dependency>
+
+                        [INFO] +- de.mpg.mpgaai:mpgaai-shhaa:jar:1.0.13:compile
+[INFO] |  \- de.mpg.mpgaai:mpgaai-jaas:jar:1.5.0:compile
+[INFO] |     \- log4j:log4j:jar:1.2.14:compile
         -->
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>1.2.14</version>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
         <!--
                         <dependency> <groupId>org.slf4j</groupId>

@@ -54,11 +54,11 @@ public class LogicRule implements Rule {
 	 */
 	private static Boolean parseLogicMode(String value) {
 		if(value == null || value.isEmpty())
-			return new Boolean(false);
+			return false;
 		if(value.equalsIgnoreCase("OR"))
-			return new Boolean(true);
+			return true;
 		if(value.equalsIgnoreCase("AND"))
-			return new Boolean(false);
+			return false;
 		return null;
 	}
 	

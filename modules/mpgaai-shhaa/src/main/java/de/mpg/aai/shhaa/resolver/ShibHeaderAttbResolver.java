@@ -5,7 +5,7 @@ import java.util.Enumeration;
 import java.util.Set;
 
 import javax.security.auth.Subject;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,7 +102,7 @@ public class ShibHeaderAttbResolver implements AttributeResolverModule, Configur
 				log.trace("found no values for attribute {}", targetID);
 			else 
 				credentials.add(cred);
-			log.trace("added attribute {} with {} values", targetID, new Integer(cred.size()));
+			log.trace("added attribute {} with {} values", targetID, cred.size());
 		}
 	}
 	

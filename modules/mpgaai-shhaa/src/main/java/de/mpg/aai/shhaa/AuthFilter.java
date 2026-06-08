@@ -4,17 +4,17 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.UnavailableException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.UnavailableException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -117,7 +117,7 @@ public class AuthFilter implements Filter {
 	 * put there by {@link ConfigContextListener}, 
 	 * if not found it tries to load the config from this filter's init parameter ({@link #loadConfig(FilterConfig)}).
 	 * <div>{@inheritDoc}</div> 
-	 * @see ConfigContextListener#contextInitialized(javax.servlet.ServletContextEvent)
+	 * @see ConfigContextListener#contextInitialized(jakarta.servlet.ServletContextEvent)
 	 * @see {@link ConfigContextListener#initConfigContext(ServletContext)
 	 */
 	@Override
