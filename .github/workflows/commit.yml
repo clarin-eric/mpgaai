@@ -1,0 +1,43 @@
+name: Java CI (Compile & Test)
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - develop
+      - 'feature/**' # Triggers on feature branches like feature/login, feature/ui
+  pull_request:
+    branches:
+      - main
+      - master
+      - develop
+
+jobs:
+  test-and-verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out the repository code
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      # Step 2: Set up the Java JDK environment
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21' # Use the same Java version as your release pipeline
+          distribution: 'temurin'
+          cache: 'maven' # Caches dependencies so your daily commits test fast
+
+      # Step 3: Compile the code and run unit/integration tests
+      - name: Run Tests with Maven
+        run: mvn --batch-mode clean verify
+
+      # Step 4: Optional - Upload test reports if a test fails
+      - name: Upload Test Report Artifacts
+        if: failure() # This step ONLY runs if the Maven step fails
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-test-reports
+          path: '**/target/surefire-reports/'

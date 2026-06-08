@@ -1,0 +1,46 @@
+name: Java Maven Release Pipeline
+
+on:
+  push:
+    tags:
+      - 'v*' # Triggers the workflow whenever a tag starting with 'v' is pushed (e.g., v1.2.3)
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+
+    # Permissions required for GitHub Actions to create a release and upload assets
+    permissions:
+      contents: write
+
+    steps:
+      # Step 1: Check out the repository code
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      # Step 2: Set up the Java JDK environment
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21' # Change to '17' or your preferred Java version
+          distribution: 'temurin'
+          cache: 'maven' # Automatically caches your Maven dependencies to speed up future runs
+
+      # Step 3: Build and Package your Java code using Maven
+      - name: Build with Maven
+        run: mvn --batch-mode clean package -DskipTests=false
+
+      # Step 4: Create a GitHub Release and attach the compiled JAR/WAR files
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true # Automatically generates a changelog based on commit history
+          files: |
+            target/*.jar
+            target/*.war
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Provided natively by GitHub Actions
