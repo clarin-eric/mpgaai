@@ -40,7 +40,7 @@ jobs:
           prerelease: false
           generate_release_notes: true # Automatically generates a changelog based on commit history
           files: |
-            target/*.jar
-            target/*.war
+            modules/*/target/*.jar
+            modules/*/target/*.war
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Provided natively by GitHub Actions
