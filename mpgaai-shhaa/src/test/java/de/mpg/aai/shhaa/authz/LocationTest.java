@@ -15,8 +15,11 @@
  */
 package de.mpg.aai.shhaa.authz;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -77,20 +80,20 @@ public class LocationTest {
     @Test
     public void testMatchesMethod() {
         // no methods specified
-        Location location = new Location("/my/path", Matcher.MATCHMODE_CASE_SENSITIVE, new String[]{});
+        Location location = new Location("/my/path", Matcher.MATCHMODE_CASE_SENSITIVE, new String[] {});
         assertTrue(location.matchesMethod("GET"));
         assertTrue(location.matchesMethod("POST"));
         assertTrue(location.matchesMethod("PUT"));
         assertTrue(location.matchesMethod("DELETE"));
 
         // one method
-        location = new Location("/my/path", Matcher.MATCHMODE_CASE_SENSITIVE, new String[]{"GET"});
+        location = new Location("/my/path", Matcher.MATCHMODE_CASE_SENSITIVE, new String[] { "GET" });
         assertTrue(location.matchesMethod("GET"));
         assertTrue(location.matchesMethod("get"));
         assertFalse(location.matchesMethod("POST"));
 
         // multiple methods
-        location = new Location("/my/path", Matcher.MATCHMODE_CASE_SENSITIVE, new String[]{"PUT", "POST", "DELETE"});
+        location = new Location("/my/path", Matcher.MATCHMODE_CASE_SENSITIVE, new String[] { "PUT", "POST", "DELETE" });
         assertTrue(location.matchesMethod("put"));
         assertTrue(location.matchesMethod("POST"));
         assertTrue(location.matchesMethod("delete"));

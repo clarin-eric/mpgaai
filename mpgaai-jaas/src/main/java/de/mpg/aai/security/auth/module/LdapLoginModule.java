@@ -1,14 +1,19 @@
-/**
- *
- */
 package de.mpg.aai.security.auth.module;
 
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.security.AccessController;
+import java.security.GeneralSecurityException;
+import java.security.Principal;
 import java.security.PrivilegedAction;
+import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -23,6 +28,12 @@ import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 import javax.naming.ldap.InitialLdapContext;
 import javax.naming.ldap.LdapContext;
+import javax.naming.ldap.StartTlsRequest;
+import javax.naming.ldap.StartTlsResponse;
+import javax.net.SocketFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import javax.security.auth.Subject;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
@@ -32,24 +43,9 @@ import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.security.auth.login.FailedLoginException;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
+
 import com.sun.security.auth.LdapPrincipal;
 import com.sun.security.auth.UserPrincipal;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import java.security.GeneralSecurityException;
-import java.security.cert.X509Certificate;
-import java.util.MissingResourceException;
-import javax.naming.ldap.StartTlsRequest;
-import javax.naming.ldap.StartTlsResponse;
-import javax.net.SocketFactory;
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 /**
  * patched version of Sun's com.sun.security.auth.module.LdapLoginModule:
@@ -62,20 +58,18 @@ import javax.net.ssl.X509TrustManager;
 public class LdapLoginModule implements LoginModule {
 
     // Use the default classloader for this class to load the prompt strings.
-    private static final ResourceBundle rb
-            = (ResourceBundle) AccessController.doPrivileged(
-                    new PrivilegedAction() {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private static final ResourceBundle rb = (ResourceBundle) AccessController.doPrivileged(
+            new PrivilegedAction() {
                 public Object run() {
                     return ResourceBundle.getBundle(
                             "sun.security.util.AuthResources");
                 }
-            }
-            );
+            });
 
     // Keys to retrieve the stored username and password
     private static final String USERNAME_KEY = "javax.security.auth.login.name";
-    private static final String PASSWORD_KEY
-            = "javax.security.auth.login.password";
+    private static final String PASSWORD_KEY = "javax.security.auth.login.password";
 
     // Option names
     private static final String USER_PROVIDER = "userProvider";
@@ -85,8 +79,7 @@ public class LdapLoginModule implements LoginModule {
 
     // Used for the username token replacement
     private static final String USERNAME_TOKEN = "{USERNAME}";
-    private static final Pattern USERNAME_PATTERN
-            = Pattern.compile("\\{USERNAME\\}");
+    private static final Pattern USERNAME_PATTERN = Pattern.compile("\\{USERNAME\\}");
 
     // Configurable options
     private String userProvider;
@@ -121,23 +114,25 @@ public class LdapLoginModule implements LoginModule {
     // Initial state
     private Subject subject;
     private CallbackHandler callbackHandler;
+    @SuppressWarnings("rawtypes")
     private Map sharedState;
-    private Map options;
+    private Map<String, ?> options;
     private LdapContext ctx;
     private Matcher identityMatcher = null;
     private Matcher filterMatcher = null;
-    private Hashtable ldapEnvironment;
+    private Hashtable<String, Object> ldapEnvironment;
     private SearchControls constraints = null;
 
     /**
      * Initialize this <code>LoginModule</code>.
      *
-     * @param subject the <code>Subject</code> to be authenticated.
+     * @param subject         the <code>Subject</code> to be authenticated.
      * @param callbackHandler a <code>CallbackHandler</code> to acquire the
-     * username and password.
-     * @param sharedState shared <code>LoginModule</code> state.
-     * @param options options specified in the login <code>Configuration</code>
-     * for this particular <code>LoginModule</code>.
+     *                        username and password.
+     * @param sharedState     shared <code>LoginModule</code> state.
+     * @param options         options specified in the login
+     *                        <code>Configuration</code>
+     *                        for this particular <code>LoginModule</code>.
      */
     public void initialize(Subject subject, CallbackHandler callbackHandler,
             Map<String, ?> sharedState, Map<String, ?> options) {
@@ -147,14 +142,14 @@ public class LdapLoginModule implements LoginModule {
         this.sharedState = sharedState;
         this.options = options;
 
-        ldapEnvironment = new Hashtable(9);
+        ldapEnvironment = new Hashtable<>(9);
         ldapEnvironment.put(Context.INITIAL_CONTEXT_FACTORY,
                 "com.sun.jndi.ldap.LdapCtxFactory");
 
         // Add any JNDI properties to the environment
-        Set keys = options.keySet();
+        Set<String> keys = options.keySet();
         String key;
-        for (Iterator i = keys.iterator(); i.hasNext();) {
+        for (Iterator<String> i = keys.iterator(); i.hasNext();) {
             key = (String) i.next();
             if (key.indexOf(".") > -1) {
                 ldapEnvironment.put(key, options.get(key));
@@ -180,7 +175,7 @@ public class LdapLoginModule implements LoginModule {
             }
             constraints = new SearchControls();
             constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
-            constraints.setReturningAttributes(new String[0]); //return no attrs
+            constraints.setReturningAttributes(new String[0]); // return no attrs
             constraints.setReturningObjFlag(true); // to get the full DN
         }
 
@@ -188,10 +183,9 @@ public class LdapLoginModule implements LoginModule {
         if (authzIdentity != null
                 && authzIdentity.startsWith("{") && authzIdentity.endsWith("}")) {
             if (constraints != null) {
-                authzIdentityAttr
-                        = authzIdentity.substring(1, authzIdentity.length() - 1);
+                authzIdentityAttr = authzIdentity.substring(1, authzIdentity.length() - 1);
                 constraints.setReturningAttributes(
-                        new String[]{authzIdentityAttr});
+                        new String[] { authzIdentityAttr });
             }
             authzIdentity = null; // set later, from the specified attribute
         }
@@ -210,18 +204,16 @@ public class LdapLoginModule implements LoginModule {
             ldapEnvironment.remove(Context.SECURITY_PROTOCOL);
         } else {
             ldapEnvironment.put(Context.SECURITY_PROTOCOL, "ssl");
-            //Disable certificate verification
+            // Disable certificate verification
             if ("false".equalsIgnoreCase((String) options.get("verifyCertificate"))) {
                 verifyCertificate = false;
                 ldapEnvironment.put("java.naming.ldap.factory.socket", BlindSSLSocketFactory.class.getName());
             }
         }
-        
-        tryFirstPass
-                = "true".equalsIgnoreCase((String) options.get("tryFirstPass"));
 
-        useFirstPass
-                = "true".equalsIgnoreCase((String) options.get("useFirstPass"));
+        tryFirstPass = "true".equalsIgnoreCase((String) options.get("tryFirstPass"));
+
+        useFirstPass = "true".equalsIgnoreCase((String) options.get("useFirstPass"));
 
         storePass = "true".equalsIgnoreCase((String) options.get("storePass"));
 
@@ -243,8 +235,9 @@ public class LdapLoginModule implements LoginModule {
                         + "search-first mode; ");
             }
         }
-        if(useSSL) {
-            System.out.println("SSL enabled; " + (verifyCertificate ? "Verifying certicates" : "_CERTIFACTE VERIFICATION DISABLED_"));
+        if (useSSL) {
+            System.out.println("SSL enabled; "
+                    + (verifyCertificate ? "Verifying certicates" : "_CERTIFACTE VERIFICATION DISABLED_"));
         } else {
             System.out.println("SSL disabled");
         }
@@ -258,10 +251,10 @@ public class LdapLoginModule implements LoginModule {
      * directory.
      *
      * @return true always, since this <code>LoginModule</code> should not be
-     * ignored.
+     *         ignored.
      * @exception FailedLoginException if the authentication fails.
-     * @exception LoginException if this <code>LoginModule</code> is unable to
-     * perform the authentication.
+     * @exception LoginException       if this <code>LoginModule</code> is unable to
+     *                                 perform the authentication.
      */
     public boolean login() throws LoginException {
 
@@ -366,10 +359,9 @@ public class LdapLoginModule implements LoginModule {
      *
      * @exception LoginException if the commit fails
      * @return true if this LoginModule's own login and commit attempts
-     * succeeded, or false otherwise.
+     *         succeeded, or false otherwise.
      */
     public boolean commit() throws LoginException {
-
         if (succeeded == false) {
             return false;
         } else {
@@ -378,7 +370,7 @@ public class LdapLoginModule implements LoginModule {
                 throw new LoginException("Subject is read-only");
             }
             // add Principals to the Subject
-            Set principals = subject.getPrincipals();
+            Set<Principal> principals = subject.getPrincipals();
 
             if (!this.noLdapPrincipal) {
                 if (!principals.contains(ldapPrincipal)) {
@@ -441,7 +433,7 @@ public class LdapLoginModule implements LoginModule {
      *
      * @exception LoginException if the abort fails.
      * @return false if this LoginModule's own login and/or commit attempts
-     * failed, and true otherwise.
+     *         failed, and true otherwise.
      */
     public boolean abort() throws LoginException {
         if (debug) {
@@ -477,14 +469,14 @@ public class LdapLoginModule implements LoginModule {
      *
      * @exception LoginException if the logout fails.
      * @return true in all cases since this <code>LoginModule</code> should not
-     * be ignored.
+     *         be ignored.
      */
     public boolean logout() throws LoginException {
         if (subject.isReadOnly()) {
             cleanState();
             throw new LoginException("Subject is read-only");
         }
-        Set principals = subject.getPrincipals();
+        Set<Principal> principals = subject.getPrincipals();
         principals.remove(ldapPrincipal);
         principals.remove(userPrincipal);
         if (authzIdentity != null) {
@@ -510,7 +502,7 @@ public class LdapLoginModule implements LoginModule {
      * Attempt authentication
      *
      * @param getPasswdFromSharedState boolean that tells this method whether to
-     * retrieve the password from the sharedState.
+     *                                 retrieve the password from the sharedState.
      * @exception LoginException if the authentication attempt fails.
      */
     private void attemptAuthentication(boolean getPasswdFromSharedState)
@@ -529,19 +521,17 @@ public class LdapLoginModule implements LoginModule {
 
             String id = replaceUsernameToken(identityMatcher, authcIdentity);
 
-           
-
             try {
                 // Connect to the LDAP server (using simple bind)
-                //ldapEnvironment.put("java.naming.ldap.factory.socket", BlindSSLSocketFactory.class.getName());
+                // ldapEnvironment.put("java.naming.ldap.factory.socket",
+                // BlindSSLSocketFactory.class.getName());
                 ctx = new InitialLdapContext(ldapEnvironment, null);
 
                 // Start TLS
-                StartTlsResponse tls =
-                    (StartTlsResponse) ctx.extendedOperation(new StartTlsRequest());
-                
+                StartTlsResponse tls = (StartTlsResponse) ctx.extendedOperation(new StartTlsRequest());
+
                 tls.negotiate();
-                
+
                 // Prepare to bind using user's username and password
                 ldapEnvironment.put(Context.SECURITY_CREDENTIALS, password);
                 ldapEnvironment.put(Context.SECURITY_PRINCIPAL, id);
@@ -552,20 +542,19 @@ public class LdapLoginModule implements LoginModule {
 
                     System.out.println("\t\t[LdapLoginModule] "
                             + "attempting to authenticate user: " + username);
-                
-                
+
                 }
-                
-                //force bind over tls connection
+
+                // force bind over tls connection
                 ctx.reconnect(null);
 
                 tls.close();
-                
+
             } catch (NamingException e) {
-                
+
                 throw (LoginException) new FailedLoginException("Cannot bind to LDAP server")
                         .initCause(e);
-            } catch(IOException e) {
+            } catch (IOException e) {
                 throw (LoginException) new FailedLoginException("Cannot communicate with LDAP server")
                         .initCause(e);
             }
@@ -647,7 +636,7 @@ public class LdapLoginModule implements LoginModule {
      *
      * @param ctx an LDAP context to use for the search
      * @return the user's distinguished name or an empty string if none was
-     * found.
+     *         found.
      * @exception LoginException if the user's entry cannot be found.
      */
     private String findUserDN(LdapContext ctx) throws LoginException {
@@ -669,7 +658,7 @@ public class LdapLoginModule implements LoginModule {
         }
 
         try {
-            NamingEnumeration results = ctx.search("",
+            NamingEnumeration<SearchResult> results = ctx.search("",
                     replaceUsernameToken(filterMatcher, userFilter), constraints);
 
             // Extract the distinguished name of the user's entry
@@ -678,8 +667,8 @@ public class LdapLoginModule implements LoginModule {
                 SearchResult entry = (SearchResult) results.next();
 
                 // %%% - use the SearchResult.getNameInNamespace method
-                //        available in JDK 1.5 and later.
-                //        (can remove call to constraints.setReturningObjFlag)
+                // available in JDK 1.5 and later.
+                // (can remove call to constraints.setReturningObjFlag)
                 userDN = ((Context) entry.getObject()).getNameInNamespace();
 
                 if (debug) {
@@ -689,8 +678,7 @@ public class LdapLoginModule implements LoginModule {
 
                 // Extract a value from user's authorization identity attribute
                 if (authzIdentityAttr != null) {
-                    Attribute attr
-                            = entry.getAttributes().get(authzIdentityAttr);
+                    Attribute attr = entry.getAttributes().get(authzIdentityAttr);
                     if (attr != null) {
                         Object val = attr.get();
                         if (val instanceof String) {
@@ -738,7 +726,7 @@ public class LdapLoginModule implements LoginModule {
      * use/tryFirstPass.
      *
      * @param getPasswdFromSharedState boolean that tells this method whether to
-     * retrieve the password from the sharedState.
+     *                                 retrieve the password from the sharedState.
      * @exception LoginException if the username/password cannot be acquired.
      */
     private void getUsernamePassword(boolean getPasswdFromSharedState)
@@ -814,7 +802,6 @@ public class LdapLoginModule implements LoginModule {
         }
     }
 
-
     /**
      * http://huikaucom.blogspot.it/2006/05/disable-cert-validation-for-ldap-and.html
      */
@@ -825,45 +812,50 @@ public class LdapLoginModule implements LoginModule {
          * Builds an all trusting "blind" ssl socket factory.
          */
         static {
-                // create a trust manager that will purposefully fall down on the
-                // job
-                TrustManager[] blindTrustMan = new TrustManager[] { new X509TrustManager() {
-                        public X509Certificate[] getAcceptedIssuers() { return null; }
-                        public void checkClientTrusted(X509Certificate[] c, String a) { }
-                        public void checkServerTrusted(X509Certificate[] c, String a) { }
-                } };
-
-                // create our "blind" ssl socket factory with our lazy trust manager
-                try {
-                        SSLContext sc = SSLContext.getInstance("SSL");
-                        sc.init(null, blindTrustMan, new java.security.SecureRandom());
-                        blindFactory = sc.getSocketFactory();
-                } catch (GeneralSecurityException e) {
-                        e.printStackTrace();
+            // create a trust manager that will purposefully fall down on the
+            // job
+            TrustManager[] blindTrustMan = new TrustManager[] { new X509TrustManager() {
+                public X509Certificate[] getAcceptedIssuers() {
+                    return null;
                 }
+
+                public void checkClientTrusted(X509Certificate[] c, String a) {
+                }
+
+                public void checkServerTrusted(X509Certificate[] c, String a) {
+                }
+            } };
+
+            // create our "blind" ssl socket factory with our lazy trust manager
+            try {
+                SSLContext sc = SSLContext.getInstance("SSL");
+                sc.init(null, blindTrustMan, new java.security.SecureRandom());
+                blindFactory = sc.getSocketFactory();
+            } catch (GeneralSecurityException e) {
+                e.printStackTrace();
+            }
         }
 
         /**
          * @see javax.net.SocketFactory#getDefault()
          */
         public static SocketFactory getDefault() {
-                return new BlindSSLSocketFactory();
+            return new BlindSSLSocketFactory();
         }
-
 
         /**
          * @see javax.net.SocketFactory#createSocket(java.lang.String, int)
          */
         public Socket createSocket(String arg0, int arg1) throws IOException,
-                        UnknownHostException {
-                return blindFactory.createSocket(arg0, arg1);
+                UnknownHostException {
+            return blindFactory.createSocket(arg0, arg1);
         }
 
         /**
          * @see javax.net.SocketFactory#createSocket(java.net.InetAddress, int)
          */
         public Socket createSocket(InetAddress arg0, int arg1) throws IOException {
-                return blindFactory.createSocket(arg0, arg1);
+            return blindFactory.createSocket(arg0, arg1);
         }
 
         /**
@@ -871,8 +863,8 @@ public class LdapLoginModule implements LoginModule {
          *      java.net.InetAddress, int)
          */
         public Socket createSocket(String arg0, int arg1, InetAddress arg2, int arg3)
-                        throws IOException, UnknownHostException {
-                return blindFactory.createSocket(arg0, arg1, arg2, arg3);
+                throws IOException, UnknownHostException {
+            return blindFactory.createSocket(arg0, arg1, arg2, arg3);
         }
 
         /**
@@ -880,8 +872,8 @@ public class LdapLoginModule implements LoginModule {
          *      java.net.InetAddress, int)
          */
         public Socket createSocket(InetAddress arg0, int arg1, InetAddress arg2,
-                        int arg3) throws IOException {
-                return blindFactory.createSocket(arg0, arg1, arg2, arg3);
+                int arg3) throws IOException {
+            return blindFactory.createSocket(arg0, arg1, arg2, arg3);
         }
     }
 }
