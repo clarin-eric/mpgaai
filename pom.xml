@@ -1,57 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
+
     <groupId>de.mpg.mpgaai</groupId>
-    <artifactId>mpgaai-parent</artifactId>
+    <artifactId>mpgaai-m2root</artifactId>
     <packaging>pom</packaging>
     <version>1.0</version>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-    
-    <dependencies>
-    </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.0</version>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.1.0</version>
-                <configuration>
-                    <descriptors>
-                        <descriptor>src/main/assembly/module-jars.xml</descriptor>
-                    </descriptors>
-                    <descriptorRefs>
-                        <descriptorRef>project</descriptorRef>
-                    </descriptorRefs>
-                </configuration>
-            </plugin>
-
-        </plugins>
-    </build>
-
     <modules>
-        <module>modules/mpgaai-jaas</module>
-        <module>modules/mpgaai-shhaa</module>
-        <!--module>modules/mpgaai-idpproxy</module-->
+        <module>mpgaai-parent</module>
+
+        <module>mpgaai-jaas</module>
+        <module>mpgaai-shhaa</module>
+
+        <!-- <module>mpgaai-idpproxy</module> -->
     </modules>
 
     <name>mpgaai-m2root</name>
     <description>
         an authentication- and authorization infrastructure for the max planck society; 
-        'mpgaai-m2root' is "just" the parent/master project where the other mpgaai-* projects are linked in as modules
+        'mpgaai-m2root' is "just" the master project where the other mpgaai-* projects are linked in as modules
         in order to have a convenient location to build all together.
     </description>
     <url>https://aai.mpg.de</url>
@@ -61,7 +32,7 @@
         <name>computing center garching of the max planck society</name>
         <url>http://www.rzg.mpg.de/</url>
     </organization>
-	
+
     <licenses>
         <license>
             <name>Apache 2</name>
@@ -69,17 +40,17 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-	
+
     <issueManagement>
-        <system>trac</system>
-        <url>http://pfanne.rzg.mpg.de/trac/mpgaai/</url>
+        <system>GitHub</system>
+        <url>https://github.com/clarin-eric/mpgaai/issues</url>
     </issueManagement>
 
     <scm>
-        <connection>scm:svn:https://pfanne.rzg.mpg.de/svn/RZG/mpgaai/</connection>
-        <developerConnection>scm:svn:https://pfanne.rzg.mpg.de/svn/RZG/mpgaai/</developerConnection>
+        <connection>scm:git:https://github.com/clarin-eric/mpgaai.git</connection>
+        <developerConnection>scm:git:git@github.com:clarin-eric/mpgaai.git</developerConnection>
         <tag>HEAD</tag>
-        <url>https://pfanne.rzg.mpg.de/svn/RZG/mpgaai/</url>
+        <url>https://github.com/clarin-eric/mpgaai</url>
     </scm>
 
     <developers>
@@ -136,11 +107,44 @@
         </contributor>
     </contributors>
 
-    <distributionManagement>
-    <repository>
-      <id>Clarin</id>
-      <name>CLARIN Nexus Repository</name>
-      <url>https://nexus.clarin.eu/repository/Clarin/</url>
-    </repository>
-  </distributionManagement>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.8.0</version>
+                <configuration>
+                    <descriptors>
+                        <descriptor>src/main/assembly/module-jars.xml</descriptor>
+                    </descriptors>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>module-jars</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
