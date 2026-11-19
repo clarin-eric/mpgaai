@@ -29,6 +29,7 @@
 			<item name="API JavaDoc" href="apidocs/index.html" />
 		</menu>
 
+		<menu ref="parent" />
 		<menu ref="reports" />
 	</body>
 </project>

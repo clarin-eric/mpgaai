@@ -145,6 +145,20 @@
                     <skip>true</skip>
                 </configuration>
             </plugin>
+
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.22.0</version>
+            </plugin>
         </plugins>
     </build>
+
+    <distributionManagement>
+        <site>
+            <id>github-pages</id>
+            <url>https://clarin-eric.github.io/mpgaai/</url>
+        </site>
+    </distributionManagement>
 </project>

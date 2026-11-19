@@ -505,6 +505,7 @@ public class LdapLoginModule implements LoginModule {
      *                                 retrieve the password from the sharedState.
      * @exception LoginException if the authentication attempt fails.
      */
+    @SuppressWarnings("unchecked")
     private void attemptAuthentication(boolean getPasswdFromSharedState)
             throws LoginException {
 

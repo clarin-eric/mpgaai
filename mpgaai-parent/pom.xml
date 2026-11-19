@@ -265,14 +265,31 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <configuration>
+                    <topSiteURL>https://clarin-eric.github.io/mpgaai/</topSiteURL>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
     <reporting>
+        <!-- mvn site -->
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
+            </plugin>
+            <!-- javadoc -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <doclint>none</doclint>
+                </configuration>
             </plugin>
         </plugins>
     </reporting>
@@ -289,12 +306,16 @@
             <name>CLARIN Nexus Repository</name>
             <url>https://nexus.clarin.eu/repository/Clarin/</url>
         </repository>
-
         <snapshotRepository>
             <id>CLARIN-Snapshot</id>
             <name>CLARIN Snapshot Repository</name>
             <url>https://nexus.clarin.eu/content/repositories/clarin-snapshot</url>
         </snapshotRepository>
+
+        <site>
+            <id>github-pages</id>
+            <url>https://clarin-eric.github.io/mpgaai/mpgaai-parent/</url>
+        </site>
     </distributionManagement>
 
     <repositories>

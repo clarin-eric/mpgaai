@@ -185,4 +185,11 @@
             <timezone>+1</timezone>
         </contributor>
     </contributors>
+
+    <distributionManagement>
+        <site>
+            <id>github-pages</id>
+            <url>https://clarin-eric.github.io/mpgaai/mpgaai-jaas/</url>
+        </site>
+    </distributionManagement>
 </project>
