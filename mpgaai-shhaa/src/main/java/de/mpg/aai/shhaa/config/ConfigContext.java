@@ -107,4 +107,28 @@ public class ConfigContext {
                     "no authn/z service found - seems not initialized -> call init(URL/String) first");
         return this.authSrv;
     }
+
+    /**
+     * @param config the (loaded) actual configuration to set
+     * @apiNote intended for subclasses to set private {@link #config} field,
+     *          disallows {@code null}
+     */
+    protected void setConfiguration(Configuration config) {
+        if (config == null) {
+            throw new ConfigurationException("setting Configuration to null must not be done");
+        }
+        this.config = config;
+    }
+
+    /**
+     * @param authSrv the (loaded/initialized) authn/z handler to set
+     * @apiNote intended for subclasses to set private {@link #authSrv} field,
+     *          disallows {@code null}
+     */
+    protected void setAuthService(HttpAuthService authSrv) {
+        if (authSrv == null) {
+            throw new ConfigurationException("setting authn/z serice to null must not be done");
+        }
+        this.authSrv = authSrv;
+    }
 }

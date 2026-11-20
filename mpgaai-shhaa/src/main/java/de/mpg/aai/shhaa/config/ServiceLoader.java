@@ -28,8 +28,7 @@ public class ServiceLoader {
      * @param configCtx context providing the current config
      * @return HttpAuthService instance as configured - the main authn/z handler
      */
-    static HttpAuthService load(ConfigContext configCtx) {
-        // TODO make this configurable
+    public static HttpAuthService load(ConfigContext configCtx) {
         Configuration config = configCtx.getConfiguration();
         final HttpAuthService result = new HttpAuthService();
         result.setAuthnCtxHandler(loadAuthenticationCtxHandler(config));
