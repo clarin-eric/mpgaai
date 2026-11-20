@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>de.mpg.mpgaai</groupId>
+        <artifactId>mpgaai-parent</artifactId>
+        <version>2.0.0-SNAPSHOT</version>
+        <relativePath>../mpgaai-parent</relativePath>
+    </parent>
+
+    <groupId>de.mpg.mpgaai</groupId>
+    <artifactId>mpgaai-jaas</artifactId>
+    <packaging>jar</packaging>
+    <version>2.0.0-SNAPSHOT</version>
+
+    <dependencies>
+        <!-- ** commons etc... ***** -->
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.23.0</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+    </dependencies>
+
+    <name>mpgaai-jaas</name>
+    <description>
+        base classes and jaas implementations for mpgaai
+    </description>
+    <url>https://aai.rzg.mpg.de/jaas/</url>
+    <inceptionYear>2009</inceptionYear>
+
+    <licenses>
+        <license>
+            <name>Apache 2</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>matthias egger</name>
+            <organization>RZG - computing center garching of the max planck society</organization>
+            <organizationUrl>http://www.rzg.mpg.de/</organizationUrl>
+            <roles>
+                <role>development</role>
+                <role>documentation</role>
+            </roles>
+            <timezone>+1</timezone>
+        </developer>
+    </developers>
+
+    <contributors>
+        <contributor>
+            <name>sebastian rieger</name>
+            <organization>GWDG - gesellschaft fuer wissenschaftliche datenverarbeitung goettingen</organization>
+            <organizationUrl>http://www.gwdg.de/</organizationUrl>
+            <roles>
+                <role>contributor</role>
+            </roles>
+            <timezone>+1</timezone>
+        </contributor>
+    </contributors>
+
+    <distributionManagement>
+        <site>
+            <id>github-pages</id>
+            <url>https://clarin-eric.github.io/mpgaai/mpgaai-shhaa/</url>
+        </site>
+    </distributionManagement>
+</project>

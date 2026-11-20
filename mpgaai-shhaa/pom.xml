@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>de.mpg.mpgaai</groupId>
+        <artifactId>mpgaai-parent</artifactId>
+        <version>2.0.0-SNAPSHOT</version>
+        <relativePath>../mpgaai-parent</relativePath>
+    </parent>
+
+    <groupId>de.mpg.mpgaai</groupId>
+    <artifactId>mpgaai-shhaa</artifactId>
+    <version>2.0.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>de.mpg.mpgaai</groupId>
+            <artifactId>mpgaai-jaas</artifactId>
+            <version>2.0.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>6.1.0</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j2-impl</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <!-- NOTE: probably not really required at the moment -->
+                        <exclude>**log4j.xml</exclude>
+                        <exclude>**log4j2.xml</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <archiveClasses>true</archiveClasses>
+                    <webResources>
+                        <!-- copy generated sites 4 documentation -->
+                        <resource>
+                            <directory>${project.build.directory}/site</directory>
+                            <includes>
+                                <include>**</include>
+                            </includes>
+                            <filtering>false</filtering>
+                            <targetPath>site</targetPath>
+                        </resource>
+                    </webResources>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>war</id>
+            <build>
+                <plugins>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>war-javadoc</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>javadoc</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-site-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>war-site</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>site</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-war-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>war-war</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>war</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+    <name>mpgaai-shhaa</name>
+    <description>
+        simple http header authn/z:
+        a simple webapp filter to pull authentication- and authorization information from an upstream Shibboleth Service Provider. 
+        provides convenient API to retrieve authn/z information from the SP by checking http header for Shibboleth Attributes.
+        additional with option to protect webapp locations by attribute based authorization rules just like a native Shibboleth-SP.  
+    </description>
+    <url>https://aai.rzg.mpg.de/shhaa/</url>
+    <inceptionYear>2009</inceptionYear>
+
+    <licenses>
+        <license>
+            <name>Apache 2</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>matthias egger</name>
+            <organization>RZG - computing center garching of the max planck society</organization>
+            <organizationUrl>http://www.rzg.mpg.de/</organizationUrl>
+            <roles>
+                <role>development</role>
+                <role>documentation</role>
+            </roles>
+            <timezone>+1</timezone>
+        </developer>
+    </developers>
+
+    <contributors>
+        <contributor>
+            <name>sebastian rieger</name>
+            <organization>GWDG - gesellschaft fuer wissenschaftliche datenverarbeitung goettingen</organization>
+            <organizationUrl>http://www.gwdg.de/</organizationUrl>
+            <roles>
+                <role>contributor</role>
+            </roles>
+            <timezone>+1</timezone>
+        </contributor>
+    </contributors>
+
+    <distributionManagement>
+        <site>
+            <id>github-pages</id>
+            <url>https://clarin-eric.github.io/mpgaai/mpgaai-jaas/</url>
+        </site>
+    </distributionManagement>
+</project>
